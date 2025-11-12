@@ -5538,8 +5538,8 @@ HAVING
         $currentRole = Session('role');
         $currentNik = Session('nik');
 
-        //Cek apakah user ini perlu lock (hanya SPV2, SPV3, SPV4, dan team_verifikator_lvl1) dan diakses dengan parameter lock
-        $needsLock = in_array($currentRole, ['spv2', 'spv3', 'spv4', 'team_verifikator_lvl1']) && request()->has('lock');
+        //Cek apakah user ini perlu lock (hanya SPV2, SPV3, SPV4, team_verifikator_lvl1, dan team_verifikator_lvl2) dan diakses dengan parameter lock
+        $needsLock = in_array($currentRole, ['spv2', 'spv3', 'spv4', 'team_verifikator_lvl1', 'team_verifikator_lvl2']) && request()->has('lock');
 
         if ($needsLock) {
             // Coba untuk lock loan ini
@@ -5597,8 +5597,8 @@ HAVING
         $currentRole = Session('role');
         $currentNik = Session('nik');
 
-        // Cek apakah user ini perlu lock (hanya SPV2, SPV3, SPV4, dan team_verifikator_lvl1) dan diakses dengan parameter lock
-        $needsLock = in_array($currentRole, ['spv2', 'spv3', 'spv4', 'team_verifikator_lvl1']) && request()->has('lock');
+        // Cek apakah user ini perlu lock (hanya SPV2, SPV3, SPV4, team_verifikator_lvl1, dan team_verifikator_lvl2) dan diakses dengan parameter lock
+        $needsLock = in_array($currentRole, ['spv2', 'spv3', 'spv4', 'team_verifikator_lvl1', 'team_verifikator_lvl2']) && request()->has('lock');
 
         if ($needsLock) {
             // Coba untuk lock loan ini
