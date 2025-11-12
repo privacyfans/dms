@@ -116,7 +116,7 @@
                                                         </small>
                                                     </td>
                                                     <td>
-                                                        <a href="{{ route('loans.show', $loan->loan_app_no) }}"
+                                                        <a href="{{ route('loans.show', $loan->loan_app_no) }}?lock=1"
                                                            class="btn btn-sm btn-success">
                                                             <i class="fa fa-gavel"></i> Show
                                                         </a>

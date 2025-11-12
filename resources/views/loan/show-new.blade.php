@@ -513,12 +513,30 @@
                                                                     $visibleDokumen = $kat->dokumen->filter(function (
                                                                         $dokumen,
                                                                     ) use ($products) {
-                                                                        return (isKupeg($products->jenis_produk) &&
+                                                                        // First check product type compatibility
+                                                                        $productMatch = (isKupeg($products->jenis_produk) &&
                                                                             $dokumen->kupeg) ||
                                                                             (isKupen($products->jenis_produk) &&
                                                                                 $dokumen->kupen) ||
                                                                             (isKupenHybrid($products->jenis_produk) &&
                                                                                 $dokumen->kupen_hybrid);
+
+                                                                        // If product doesn't match, hide document
+                                                                        if (!$productMatch) {
+                                                                            return false;
+                                                                        }
+
+                                                                        // Filter documents ID 30, 31, 32 by role
+                                                                        $restrictedDocIds = [30, 31, 32];
+                                                                        $allowedRoles = ['staff', 'team_verifikator_lvl1', 'team_verifikator_lvl2'];
+                                                                        $currentRole = Session('role');
+
+                                                                        // If document is restricted and user role is not allowed, hide it
+                                                                        if (in_array($dokumen->id, $restrictedDocIds) && !in_array($currentRole, $allowedRoles)) {
+                                                                            return false;
+                                                                        }
+
+                                                                        return true;
                                                                     });
 
                                                                     // Split into two columns
