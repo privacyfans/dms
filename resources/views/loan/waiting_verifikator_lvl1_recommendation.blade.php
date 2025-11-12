@@ -120,7 +120,7 @@
                                     @endif
                                 </td>
                                 <td>
-                                    <a href="{{ route('loans.show', $loan->loan_app_no) }}?lock=1"
+                                    <a href="{{ route('datafile.show_new', $loan->loan_app_no) }}?lock=1"
                                        class="btn btn-sm btn-primary">
                                         <i class="fa fa-file-text"></i> Show
                                     </a>
