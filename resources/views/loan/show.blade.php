@@ -402,9 +402,22 @@
                                                                     <div aria-multiselectable="true" class="accordion" id="accordion" role="tablist">
                                                                         
                                                                         @foreach ($map_product->skip(0)->take($jml_isi_kolom) as $map)
-                                                                        
+
                                                                         <?php
-                                                                       
+                                                                        // Filter restricted documents by role
+                                                                        $restrictedDocs = [
+                                                                            'Spesimen Juru Bayar dan Komandan',
+                                                                            'SK Pengangkatan Juru Bayar',
+                                                                            'Nomer Telepon Juru Bayar dan Nomer Telepon Debitur'
+                                                                        ];
+                                                                        $allowedRoles = ['staff', 'team_verifikator_lvl1', 'team_verifikator_lvl2'];
+                                                                        $currentRole = Session('role');
+
+                                                                        // Skip restricted documents if user role is not allowed
+                                                                        if (in_array($map->nama_dokumen, $restrictedDocs) && !in_array($currentRole, $allowedRoles)) {
+                                                                            continue;
+                                                                        }
+
                                                                         if(get_warna($datafile->loan_app_no,$map->nama_dokumen) =="error"  && getBadgeMandatory($map->nama_dokumen,$map->mandatory,$datafile->status_pernikahan,$datafile->pekerjaan,$datafile->fasilitas) !=""){
                                                                             $dokumenbelumlengkap=$dokumenbelumlengkap+1;
                                                                         }
@@ -542,7 +555,20 @@
                                                                        
                                                                         @foreach ($map_product->skip($jml_isi_kolom)->take($jml)  as $map)
                                                                         <?php
-                                                                       
+                                                                        // Filter restricted documents by role
+                                                                        $restrictedDocs = [
+                                                                            'Spesimen Juru Bayar dan Komandan',
+                                                                            'SK Pengangkatan Juru Bayar',
+                                                                            'Nomer Telepon Juru Bayar dan Nomer Telepon Debitur'
+                                                                        ];
+                                                                        $allowedRoles = ['staff', 'team_verifikator_lvl1', 'team_verifikator_lvl2'];
+                                                                        $currentRole = Session('role');
+
+                                                                        // Skip restricted documents if user role is not allowed
+                                                                        if (in_array($map->nama_dokumen, $restrictedDocs) && !in_array($currentRole, $allowedRoles)) {
+                                                                            continue;
+                                                                        }
+
                                                                         if(get_warna($datafile->loan_app_no,$map->nama_dokumen) =="error"  && getBadgeMandatory($map->nama_dokumen,$map->mandatory,$datafile->status_pernikahan,$datafile->pekerjaan,$datafile->fasilitas) !=""){
                                                                             $dokumenbelumlengkap=$dokumenbelumlengkap+1;
                                                                         }
