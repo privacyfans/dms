@@ -5548,7 +5548,7 @@ HAVING
             // Jika lock gagal karena sudah di-lock oleh user lain
             if (is_array($lockResult) && !$lockResult['success']) {
                 return redirect()->back()
-                    ->with('error', "Loan App No {$id} sedang direview oleh {$lockResult['locked_by_name']} ({$lockResult['locked_by']}). Silakan coba beberapa saat lagi.");
+                    ->with('error', "Loan App No {$id} sedang direview oleh {$lockResult['locked_by_name']} ({$lockResult['locked_by']}). Silakan review dokumen yang lain.");
             }
 
             // Jika lock gagal karena error
@@ -5607,7 +5607,7 @@ HAVING
             // Jika lock gagal karena sudah di-lock oleh user lain
             if (is_array($lockResult) && !$lockResult['success']) {
                 return redirect()->back()
-                    ->with('error', "Loan App No {$id} sedang direview oleh {$lockResult['locked_by_name']} ({$lockResult['locked_by']}). Silakan coba beberapa saat lagi.");
+                    ->with('error', "Loan App No {$id} sedang direview oleh {$lockResult['locked_by_name']} ({$lockResult['locked_by']}). Silakan review dokumen yang lain.");
             }
 
             // Jika lock gagal karena error
