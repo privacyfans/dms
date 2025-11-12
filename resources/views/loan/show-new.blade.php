@@ -512,7 +512,7 @@
                                                                     // Filter visible documents
                                                                     $visibleDokumen = $kat->dokumen->filter(function (
                                                                         $dokumen,
-                                                                    ) use ($products) {
+                                                                    ) use ($products, $datafile) {
                                                                         // First check product type compatibility
                                                                         $productMatch = (isKupeg($products->jenis_produk) &&
                                                                             $dokumen->kupeg) ||
@@ -534,6 +534,18 @@
                                                                         // If document is restricted and user role is not allowed, hide it
                                                                         if (in_array($dokumen->id, $restrictedDocIds) && !in_array($currentRole, $allowedRoles)) {
                                                                             return false;
+                                                                        }
+
+                                                                        // Filter document ID 29 (Akseptasi Persetujuan Mitra Asuransi) by date_input
+                                                                        // Hide this document if loan date_input is before 2025-10-27 17:00:00
+                                                                        if ($dokumen->id == 29 && $datafile->date_input) {
+                                                                            $cutoffDate = \Carbon\Carbon::parse('2025-10-27 17:00:00');
+                                                                            $loanDate = \Carbon\Carbon::parse($datafile->date_input);
+
+                                                                            // If loan created before cutoff date, hide this document
+                                                                            if ($loanDate->lt($cutoffDate)) {
+                                                                                return false;
+                                                                            }
                                                                         }
 
                                                                         return true;
