@@ -1,0 +1,299 @@
+/* Custom Theme - Modern DMS Design */
+
+/* ====== HEADER STYLING ====== */
+.main-header.hor-header {
+    background-color: #ffffff !important;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    border-bottom: 1px solid #e0e7ef;
+}
+
+/* Header buttons - DCRM QUEUE, NEWS, FAQ */
+.main-header .btn-primary {
+    background-color: #5B8FC0 !important;
+    border-color: #5B8FC0 !important;
+    color: #ffffff !important;
+    font-weight: 500;
+    border-radius: 6px;
+    padding: 8px 16px;
+    font-size: 13px;
+}
+
+.main-header .btn-primary:hover {
+    background-color: #4a7aad !important;
+    border-color: #4a7aad !important;
+}
+
+.main-header .btn-info {
+    background-color: #6BA3D0 !important;
+    border-color: #6BA3D0 !important;
+    color: #ffffff !important;
+    font-weight: 500;
+    border-radius: 6px;
+    padding: 8px 16px;
+    font-size: 13px;
+}
+
+.main-header .btn-info:hover {
+    background-color: #5a92bf !important;
+    border-color: #5a92bf !important;
+}
+
+/* ====== HORIZONTAL MENU NAVIGATION ====== */
+.horizontal-main.hor-menu {
+    background: linear-gradient(135deg, #E8F3FA 0%, #D4E9F7 100%) !important;
+    border-bottom: 1px solid #c5dce8;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.hor-menu .horizontalMenu > .horizontalMenu-list > li > a {
+    color: #2C3E50 !important;
+    font-weight: 500;
+    font-size: 15px;
+    padding: 14px 20px;
+    border-radius: 0;
+    transition: all 0.3s ease;
+}
+
+.hor-menu .horizontalMenu > .horizontalMenu-list > li > a:hover {
+    background-color: rgba(255, 255, 255, 0.3);
+    color: #1a252f !important;
+}
+
+/* Active menu item - Navy background with rounded corners */
+.hor-menu .horizontalMenu > .horizontalMenu-list > li > a.active {
+    background-color: #1E3A5F !important;
+    color: #ffffff !important;
+    border-radius: 20px;
+    padding: 14px 24px;
+    margin: 4px 8px;
+}
+
+.hor-menu .horizontalMenu > .horizontalMenu-list > li > a.active .side-arrow,
+.hor-menu .horizontalMenu > .horizontalMenu-list > li > a.active .side-angle1,
+.hor-menu .horizontalMenu > .horizontalMenu-list > li > a.active .side-angle2 {
+    display: none !important;
+}
+
+/* ====== DASHBOARD CARDS STYLING ====== */
+.card {
+    border-radius: 16px !important;
+    border: none !important;
+    box-shadow: 0 3px 15px rgba(0, 0, 0, 0.1) !important;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    overflow: hidden;
+}
+
+.card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 6px 25px rgba(0, 0, 0, 0.15) !important;
+}
+
+/* Daily Task Section Title */
+.card-title {
+    color: #1E3A5F !important;
+    font-weight: 700 !important;
+    font-size: 20px !important;
+}
+
+/* Card titles inside dashboard cards - smaller font */
+.card .card-body .card-title.mb-3 {
+    font-size: 14px !important;
+    font-weight: 600 !important;
+    line-height: 1.4;
+}
+
+/* Daily Transaction Card - Yellow/Gold */
+.card[style*="background-color: #f5bf41"] {
+    background: linear-gradient(135deg, #F5BF41 0%, #F4D06F 100%) !important;
+    border: none !important;
+}
+
+/* Waiting Verify DCRM Card - Light Green */
+.card[style*="background-color: #9feb66"] {
+    background: linear-gradient(135deg, #9FEB66 0%, #B5F088 100%) !important;
+    border: none !important;
+}
+
+/* Pending/Waiting Cards - Blue gradient */
+.card[style*="background-color: #35b5f4"] {
+    background: linear-gradient(135deg, #35B5F4 0%, #5FC8FF 100%) !important;
+    border: none !important;
+}
+
+/* Navy Blue Cards - for waiting DCRM */
+.card[style*="background-color: #1e3a5f"],
+.card[style*="background-color: #2c3e50"] {
+    background: linear-gradient(135deg, #1E3A5F 0%, #2C4A6E 100%) !important;
+    border: none !important;
+}
+
+/* Card text styling */
+.card h1, .card h4 {
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+/* Badges inside cards */
+.badge {
+    border-radius: 6px !important;
+    padding: 6px 12px !important;
+    font-weight: 600 !important;
+    font-size: 11px !important;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.badge-info {
+    background-color: #5FC8FF !important;
+    color: #ffffff !important;
+}
+
+.badge-warning {
+    background-color: #FFB84D !important;
+    color: #ffffff !important;
+}
+
+.badge-secondary {
+    background-color: #7B8794 !important;
+    color: #ffffff !important;
+}
+
+.badge-success {
+    background-color: #9FEB66 !important;
+    color: #1a252f !important;
+}
+
+/* Section Headers */
+.main-content-label {
+    color: #1E3A5F !important;
+    font-weight: 700 !important;
+    font-size: 20px !important;
+}
+
+/* ====== RESPONSIVE ADJUSTMENTS ====== */
+@media (max-width: 991px) {
+    .hor-menu .horizontalMenu > .horizontalMenu-list > li > a.active {
+        border-radius: 8px;
+        margin: 2px 4px;
+    }
+}
+
+/* ====== NOTIFICATION DROPDOWN ====== */
+.dropdown-menu {
+    border-radius: 8px !important;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15) !important;
+    border: 1px solid #e0e7ef !important;
+}
+
+.menu-header-content.bg-primary {
+    background: linear-gradient(135deg, #5B8FC0 0%, #4a7aad 100%) !important;
+}
+
+/* ====== PROFILE DROPDOWN ====== */
+.main-header-profile {
+    background: linear-gradient(135deg, #5B8FC0 0%, #4a7aad 100%) !important;
+}
+
+/* ====== BUTTON STYLING ====== */
+.btn-block {
+    border-radius: 6px !important;
+}
+
+/* ====== LINK COLORS ====== */
+a.btn:hover {
+    text-decoration: none !important;
+    opacity: 0.9;
+}
+
+/* ====== ADDITIONAL REFINEMENTS ====== */
+.horizontal-main.hor-menu .horizontalMenu > .horizontalMenu-list {
+    background-color: transparent !important;
+}
+
+.horizontalMenu-list > li {
+    margin: 0 2px;
+}
+
+/* Ensure proper spacing and alignment */
+.main-header .container {
+    padding-left: 20px !important;
+    padding-right: 20px !important;
+}
+
+/* Icon styling in header */
+.main-header i {
+    color: #5B8FC0 !important;
+}
+
+.main-header .dropdown-menu i {
+    color: #485079 !important;
+}
+
+/* Header notification and message icons */
+.main-header-notification > a i,
+.main-header-message > a i,
+.nav-item.full-screen > a i {
+    background-color: rgba(91, 143, 192, 0.1);
+    color: #5B8FC0 !important;
+}
+
+.main-header-notification > a:hover i,
+.main-header-message > a:hover i,
+.nav-item.full-screen > a:hover i {
+    background-color: rgba(91, 143, 192, 0.2);
+}
+
+/* FAQ button icon */
+.btn i.fa-question-circle,
+.btn i.fa-newspaper {
+    color: #ffffff !important;
+}
+
+/* Profile user image border */
+.profile-user img {
+    border: 2px solid #e0e7ef;
+    transition: border-color 0.3s ease;
+}
+
+.profile-user:hover img {
+    border-color: #5B8FC0;
+}
+
+/* ====== DAILY TASK & PENDING TASK HEADERS ====== */
+.card.mg-b-20 {
+    background: linear-gradient(135deg, #ffffff 0%, #f8fafb 100%);
+    border-left: 4px solid #5B8FC0 !important;
+}
+
+/* ====== TYPOGRAPHY IMPROVEMENTS ====== */
+.card h1 {
+    font-size: 3rem !important;
+    font-weight: 800 !important;
+    letter-spacing: -1px;
+}
+
+.card h4 {
+    font-weight: 600 !important;
+    letter-spacing: 0.3px;
+}
+
+.card p.mb-2 {
+    font-size: 13px !important;
+    opacity: 0.9;
+}
+
+/* ====== SMOOTH TRANSITIONS ====== */
+.btn, .card, .badge, a {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ====== RESPONSIVE IMPROVEMENTS ====== */
+@media (max-width: 768px) {
+    .card h1 {
+        font-size: 2.2rem !important;
+    }
+
+    .main-header .btn {
+        font-size: 12px !important;
+        padding: 6px 12px !important;
+    }
+}

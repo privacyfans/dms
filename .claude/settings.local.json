@@ -1,0 +1,19 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(php -l:*)",
+      "WebSearch",
+      "WebFetch(domain:w3c.github.io)",
+      "Bash(php artisan make:migration:*)",
+      "Read(//d/**)",
+      "Bash(findstr:*)",
+      "Bash(php artisan db:table:*)",
+      "Bash(php artisan:*)",
+      "Bash(mysql --version:*)",
+      "Bash(dir /s /b *.sql 2)",
+      "Bash(nul)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

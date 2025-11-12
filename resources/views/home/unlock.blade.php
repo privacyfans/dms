@@ -1,0 +1,141 @@
+@extends('layouts.app')
+
+@section('styles') 
+@endsection
+
+@section('breadcrumb')
+
+					<div class="left-content">
+						<h4 class="content-title mb-1">Unlock Loan App No</h4>
+						<nav aria-label="breadcrumb">
+							<ol class="breadcrumb">
+								<li class="breadcrumb-item"><a href="#">Search</a></li>
+								<li class="breadcrumb-item active" aria-current="page">Loan</li>
+							</ol>
+						</nav>
+					</div>
+
+@endsection('breadcrumb')
+
+
+@section('content')
+
+<form action="{{ route('unlock_loan') }}" method="POST">
+    @csrf
+                <div class="col-md-12 col-xl-12 col-xs-12 col-sm-12">
+						<div class="card">
+							<div class="card-body">
+								<div class="main-content-label mg-b-5">
+								Please insert Loan App No
+								</div>
+								<!-- <p class="mg-b-20 text-muted">Silahkan Masukan Loan App No</p> -->
+								
+                                @if ($message = Session::get('success'))
+                                <div class="alert alert-success" role="alert">
+                                    <button aria-label="Close" class="close" data-dismiss="alert" type="button">
+                                       <span aria-hidden="true">&times;</span>
+                                  </button>
+                                  <p>{{ $message }}</p>
+                                </div>
+                                @endif
+                                @if ($message = Session::get('error'))
+                               
+                                <div class="alert alert-danger mg-b-0" role="alert">
+                                    <button aria-label="Close" class="close" data-dismiss="alert" type="button">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                    <p>{{ $message }}</p>
+                                </div>
+                                @endif
+
+								<div class="pd-30 pd-sm-40 bg-gray-100">
+									
+									<div class="row row-xs align-items-center mg-b-20">
+										<div class="col-md-12">
+											<label class="form-label mg-b-0">Loan App No</label>
+										</div>
+										<div class="col-md-12 mg-t-5">
+											<input type="text" name="loan_app_no" class="form-control" placeholder="Loan App No">
+											
+										</div>
+									</div>
+									
+									
+									
+									<button class="btn btn-main-primary pd-x-30 mg-r-5 mg-t-5">Unlock</button>
+									<a class="btn btn-dark pd-x-30 mg-t-5" href="{{ route('index') }}">Cancel</a>
+								</div>
+							</div>
+						</div>
+					</div>
+					<!--/div-->
+</form>               
+                   
+
+
+
+    
+
+@endsection
+
+@section('scripts')
+
+<script>
+	$('.livesearch-branch').select2({
+        placeholder: 'Select Branch',
+        ajax: {
+            url: '/branch-search',
+            dataType: 'json',
+            delay: 250,
+            processResults: function (data) {
+                return {
+                    results: $.map(data, function (item) {
+                        return {
+                            text: item.branch_name,
+                            id: item.branch_code
+                        }
+                    })
+                };
+            },
+            cache: true
+        }
+    });
+
+	$('.livesearch-final-status').select2({
+        placeholder: 'Select Status Document',
+		width: 'resolve',
+		ajax: {
+			url: '/getFlag',
+			dataType: 'json',
+			delay: 250,
+			processResults: function (data) {
+				return {
+					results: $.map(data, function (item) {
+						return {
+							text: item.name,
+							id: item.id
+						}
+					})
+				};
+			},
+			cache: true
+		}
+    });
+
+	
+   
+   $(function () {
+            $(document).ready(function () {
+                $('#from_date').datepicker({
+                    format: "yyyy-mm-dd",
+                    todayBtn: "linked"
+                });
+				$('#end_date').datepicker({
+                    format: "yyyy-mm-dd",
+                    todayBtn: "linked"
+                });
+			})
+	});
+</script>
+@endsection
+
