@@ -54,6 +54,25 @@
     </div>
 </form>
 
+{{-- Flash Messages --}}
+@if ($message = Session::get('success'))
+    <div class="alert alert-success" role="alert">
+        <button aria-label="Close" class="close" data-dismiss="alert" type="button">
+            <span aria-hidden="true">&times;</span>
+        </button>
+        <p>{{ $message }}</p>
+    </div>
+@endif
+
+@if ($message = Session::get('error'))
+    <div class="alert alert-danger mg-b-0" role="alert">
+        <button aria-label="Close" class="close" data-dismiss="alert" type="button">
+            <span aria-hidden="true">&times;</span>
+        </button>
+        <p>{{ $message }}</p>
+    </div>
+@endif
+
 <div class="row">
     <div class="col-md-12 col-lg-12">
         <div class="card">
