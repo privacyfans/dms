@@ -2126,7 +2126,7 @@
                                                                         || (Session("role")=='spv4')
                                                                         || getUserPickupLoan($datafile->loan_app_no,Session("nik")))
                                                                 --}}
-                                                                {{-- Show Add Review EXCEPT when in Ready to Disburse context --}}
+                                                                {{-- Show Add Review EXCEPT when in Ready to Disburse context OR when loan is rejected --}}
                                                                 @if (
                                                                     (($previousUrl == 'https://dms.bankwoorisaudara.com/pickup' &&
                                                                         (Session('role') == 'spv3' || Session('role') == 'spv4')) ||
@@ -2140,7 +2140,8 @@
                                                                       (str_contains($previousUrl, 'pending-disbursement') ||
                                                                        (request()->has('lock') &&
                                                                         !str_contains($previousUrl, 'pickup') &&
-                                                                        !getUserPickupLoan($datafile->loan_app_no, Session('nik')))))
+                                                                        !getUserPickupLoan($datafile->loan_app_no, Session('nik'))))) &&
+                                                                    $datafile->final_status != 4
                                                                 )
                                                                     <div class="main-content-label mg-b-5">
                                                                         Add Review

@@ -5915,6 +5915,15 @@ HAVING
         if (checkTboCountIdLoan($request->loan_app_no)) {
 
             $model = DataFileModel::findOrFail($request->loan_app_no);
+
+            // Prevent review on rejected loans (final_status = 4)
+            if ($model->final_status == 4) {
+                return response()->json([
+                    'message' => 'Loan sudah di-REJECT dan tidak bisa direview ulang.',
+                    'errors' => ['loan' => 'Status loan adalah REJECT (final).']
+                ], 400);
+            }
+
             $com = new Comment;
             $com->loan_app_no = $request->loan_app_no;
             $com->comment = $request->comment;
