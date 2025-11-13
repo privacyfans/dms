@@ -5948,38 +5948,68 @@ HAVING
                 // Get all documents for this loan
                 $documents = DetailFileModel::where('loan_app_no', $request->loan_app_no)->get();
 
-                if ($documents->isNotEmpty()) {
-                    // Group by alias (jenis dokumen)
-                    $documentsByAlias = $documents->groupBy('alias');
+                // Jika tidak ada dokumen sama sekali, reject
+                if ($documents->isEmpty()) {
+                    return response()->json([
+                        'message' => 'Tidak dapat memberikan status ' . ($flag == 1 ? 'Verify' : 'TBO') . '. Belum ada dokumen yang diupload untuk loan ini.',
+                        'errors' => [
+                            'documents' => 'Silakan upload dokumen terlebih dahulu dan berikan validasi.'
+                        ]
+                    ], 400);
+                }
 
-                    // Track which document types don't have valid files
-                    $invalidDocTypes = [];
+                // Group by alias (jenis dokumen)
+                $documentsByAlias = $documents->groupBy('alias');
 
-                    foreach ($documentsByAlias as $alias => $files) {
-                        $hasValidFile = false;
+                // Track which document types don't have valid files
+                $invalidDocTypes = [];
+                $unvalidatedDocTypes = [];
 
-                        foreach ($files as $file) {
-                            if ($file->doc_validation_status == '1') {
-                                $hasValidFile = true;
-                                break;
-                            }
+                foreach ($documentsByAlias as $alias => $files) {
+                    $hasValidFile = false;
+                    $allUnvalidated = true;
+
+                    foreach ($files as $file) {
+                        // Cek apakah ada file yang valid
+                        if ($file->doc_validation_status == '1') {
+                            $hasValidFile = true;
+                            $allUnvalidated = false;
+                            break;
                         }
-
-                        // Jika jenis dokumen ini tidak memiliki file valid sama sekali
-                        if (!$hasValidFile) {
-                            $invalidDocTypes[] = $alias;
+                        // Cek apakah ada file yang sudah divalidasi (meskipun invalid)
+                        if ($file->doc_validation_status !== null && $file->doc_validation_status !== '') {
+                            $allUnvalidated = false;
                         }
                     }
 
-                    // If there are document types without valid files, reject
+                    // Jika semua file untuk jenis dokumen ini belum divalidasi
+                    if ($allUnvalidated) {
+                        $unvalidatedDocTypes[] = $alias;
+                    }
+                    // Jika sudah ada yang divalidasi tapi tidak ada yang valid
+                    elseif (!$hasValidFile) {
+                        $invalidDocTypes[] = $alias;
+                    }
+                }
+
+                // If there are unvalidated or invalid document types, reject
+                if (!empty($unvalidatedDocTypes) || !empty($invalidDocTypes)) {
+                    $errorMessages = [];
+
+                    if (!empty($unvalidatedDocTypes)) {
+                        $errorMessages[] = 'Dokumen berikut belum divalidasi: ' . implode(', ', $unvalidatedDocTypes);
+                    }
+
                     if (!empty($invalidDocTypes)) {
-                        return response()->json([
-                            'message' => 'Tidak dapat memberikan status ' . ($flag == 1 ? 'Verify' : 'TBO') . '. Beberapa jenis dokumen belum memiliki file yang valid.',
-                            'errors' => [
-                                'documents' => 'Dokumen berikut belum memiliki minimal 1 file valid: ' . implode(', ', $invalidDocTypes)
-                            ]
-                        ], 400);
+                        $errorMessages[] = 'Dokumen berikut tidak memiliki file valid: ' . implode(', ', $invalidDocTypes);
                     }
+
+                    return response()->json([
+                        'message' => 'Tidak dapat memberikan status ' . ($flag == 1 ? 'Verify' : 'TBO') . '. Semua dokumen harus memiliki minimal 1 file yang valid.',
+                        'errors' => [
+                            'documents' => implode(' | ', $errorMessages)
+                        ]
+                    ], 400);
                 }
             }
 
