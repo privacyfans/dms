@@ -2501,6 +2501,92 @@
                                                     {{-- FORM TEAM VERIFIKATOR - END --}}
                                                     {{-- ========================================= --}}
 
+                                                    {{-- ========================================= --}}
+                                                    {{-- FORM SPV READY TO DISBURSE - START --}}
+                                                    {{-- ========================================= --}}
+                                                    @if(in_array(Session("role"), ['spv2', 'spv3', 'spv4']) &&
+                                                        !empty($datafile->file_bukti_verifikator) &&
+                                                        $datafile->ready_to_disburs == 0)
+                                                    <div class="row">
+                                                        <div class="col-lg-12 col-md-12">
+                                                            <div class="card">
+                                                                <div class="card-header bg-success">
+                                                                    <h3 class="card-title text-white">
+                                                                        <i class="fa fa-money-check-alt"></i> Ready to Disburse - SPV
+                                                                    </h3>
+                                                                </div>
+                                                                <div class="card-body">
+                                                                    {{-- Display Current Loan Status --}}
+                                                                    <div class="alert alert-info">
+                                                                        <h5><strong><i class="fa fa-info-circle"></i> Status Loan:</strong></h5>
+                                                                        <table class="table table-sm table-borderless mt-2">
+                                                                            <tr>
+                                                                                <td width="200"><strong>Loan App No:</strong></td>
+                                                                                <td>{{ $datafile->loan_app_no }}</td>
+                                                                            </tr>
+                                                                            <tr>
+                                                                                <td><strong>Nama Debitur:</strong></td>
+                                                                                <td>{{ $datafile->nama_debitur }}</td>
+                                                                            </tr>
+                                                                            <tr>
+                                                                                <td><strong>Final Status:</strong></td>
+                                                                                <td>
+                                                                                    @if($datafile->final_status == 1)
+                                                                                        <span class="badge badge-success badge-lg">VERIFY</span>
+                                                                                    @elseif($datafile->final_status == 3)
+                                                                                        <span class="badge badge-warning badge-lg">TBO</span>
+                                                                                    @elseif($datafile->final_status == 6)
+                                                                                        <span class="badge badge-danger badge-lg">NOT APPROVE</span>
+                                                                                    @else
+                                                                                        <span class="badge badge-secondary badge-lg">-</span>
+                                                                                    @endif
+                                                                                </td>
+                                                                            </tr>
+                                                                            <tr>
+                                                                                <td><strong>File Bukti Verifikator:</strong></td>
+                                                                                <td>
+                                                                                    <a href="{{ asset('indexed' . $datafile->file_bukti_verifikator) }}"
+                                                                                       target="_blank"
+                                                                                       class="text-primary">
+                                                                                        <i class="fas fa-file-pdf"></i> Lihat Dokumen
+                                                                                        <i class="fas fa-external-link-alt fa-xs"></i>
+                                                                                    </a>
+                                                                                    <br>
+                                                                                    <small class="text-muted">
+                                                                                        Uploaded by: {{ $datafile->user_verif1 ?? '-' }}
+                                                                                    </small>
+                                                                                </td>
+                                                                            </tr>
+                                                                        </table>
+                                                                    </div>
+
+                                                                    <div class="alert alert-warning">
+                                                                        <strong><i class="fa fa-exclamation-triangle"></i> PENTING:</strong><br>
+                                                                        - Pastikan semua dokumen sudah direview dengan benar<br>
+                                                                        - File bukti verifikator sudah diupload oleh Team Verifikator Level 1<br>
+                                                                        - Setelah flag "Ready to Disburse", loan akan hilang dari list Pending Disbursement<br>
+                                                                        - Tindakan ini tidak dapat dibatalkan
+                                                                    </div>
+
+                                                                    <form id="formReadyToDisburse">
+                                                                        @csrf
+                                                                        <input type="hidden" name="loan_app_no" value="{{ $datafile->loan_app_no }}">
+
+                                                                        <div class="form-group text-center">
+                                                                            <button type="submit" class="btn btn-success btn-lg" id="btnReadyToDisburse">
+                                                                                <i class="fa fa-check-circle"></i> Flag Ready to Disburse
+                                                                            </button>
+                                                                        </div>
+                                                                    </form>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    @endif
+                                                    {{-- ========================================= --}}
+                                                    {{-- FORM SPV READY TO DISBURSE - END --}}
+                                                    {{-- ========================================= --}}
+
                                                     </div>
                                                 </div>
                                             </div>
@@ -3721,6 +3807,81 @@
                     });
                     btn.prop('disabled', false).html('<i class="fa fa-upload"></i> Upload File Bukti');
                     $('#upload_progress_new').hide();
+                }
+            });
+        });
+    });
+    </script>
+
+    <!-- Ready to Disburse Handler -->
+    <script>
+    $(document).ready(function() {
+        console.log('Ready to Disburse script loaded');
+
+        $('#formReadyToDisburse').on('submit', function(e) {
+            console.log('Form Ready to Disburse submitted');
+            e.preventDefault();
+
+            var loanAppNo = $(this).find('input[name="loan_app_no"]').val();
+            var btn = $('#btnReadyToDisburse');
+
+            Swal.fire({
+                title: 'Konfirmasi',
+                html: 'Flag loan <strong>' + loanAppNo + '</strong> sebagai <strong>Ready to Disburse</strong>?<br><br>' +
+                      '<small class="text-danger">Tindakan ini tidak dapat dibatalkan</small>',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#28a745',
+                cancelButtonColor: '#d33',
+                confirmButtonText: '<i class="fa fa-check"></i> Ya, Flag Ready',
+                cancelButtonText: '<i class="fa fa-times"></i> Batal'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Disable button
+                    btn.prop('disabled', true).html('<i class="fa fa-spinner fa-spin"></i> Processing...');
+
+                    // Send AJAX request
+                    $.ajax({
+                        url: '{{ url("flag-ready-to-disburs") }}/' + loanAppNo,
+                        type: 'POST',
+                        data: {
+                            _token: '{{ csrf_token() }}'
+                        },
+                        success: function(response) {
+                            console.log('Flag success:', response);
+                            if(response.success) {
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Berhasil!',
+                                    text: response.message,
+                                    showConfirmButton: true
+                                }).then(() => {
+                                    // Redirect to pending disbursement list
+                                    window.location.href = '{{ route("datafile.pendingDisbursement") }}';
+                                });
+                            } else {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Gagal!',
+                                    text: response.message
+                                });
+                                btn.prop('disabled', false).html('<i class="fa fa-check-circle"></i> Flag Ready to Disburse');
+                            }
+                        },
+                        error: function(xhr) {
+                            console.log('Flag error:', xhr);
+                            var message = 'Terjadi kesalahan saat flag ready to disburse';
+                            if(xhr.responseJSON && xhr.responseJSON.message) {
+                                message = xhr.responseJSON.message;
+                            }
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error!',
+                                text: message
+                            });
+                            btn.prop('disabled', false).html('<i class="fa fa-check-circle"></i> Flag Ready to Disburse');
+                        }
+                    });
                 }
             });
         });

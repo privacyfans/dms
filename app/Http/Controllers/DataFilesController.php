@@ -6678,10 +6678,32 @@ HAVING
         }
         // SPV4 sees all
 
+        // Search filters
+        if ($request->has('keyword_loan') && $request->keyword_loan != '') {
+            $query->where('loan_app_no', 'like', '%' . $request->keyword_loan . '%');
+        }
+
+        if ($request->has('keyword_name') && $request->keyword_name != '') {
+            $query->where('nama_debitur', 'like', '%' . $request->keyword_name . '%');
+        }
+
+        if ($request->has('keyword_branch') && $request->keyword_branch != '') {
+            $query->where('kode_cabang', 'like', '%' . $request->keyword_branch . '%');
+        }
+
+        if ($request->has('keyword_produk') && $request->keyword_produk != '') {
+            $query->where('produk', 'like', '%' . $request->keyword_produk . '%');
+        }
+
+        if ($request->has('final_status') && $request->final_status != '') {
+            $query->where('final_status', $request->final_status);
+        }
+
         // Sorting with eager loading
         $loans = $query->with('mastercabang')
                       ->orderBy('date_input', 'desc')
-                      ->paginate(50);
+                      ->paginate(50)
+                      ->appends($request->except('page')); // Maintain query params in pagination
 
         return view('loan.pending_disbursement', compact('loans'));
     }

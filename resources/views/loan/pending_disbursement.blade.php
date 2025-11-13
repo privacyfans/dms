@@ -33,6 +33,53 @@
     </div>
 @endif
 
+{{-- Search Filter --}}
+<form action="{{ url()->current() }}" method="get">
+    <div class="col-lg-12 col-md-12">
+        <div class="card">
+            <div class="card-body">
+                <div class="pd-5 pd-sm-10 bg-gray-100">
+                    <div class="input-group">
+                        <div class="col-md-2">
+                            <input type="text" class="form-control" name="keyword_loan"
+                                value="{{ request('keyword_loan') }}" placeholder="Search Loan App No ...">
+                        </div>
+                        <div class="col-md-2">
+                            <input type="text" class="form-control" name="keyword_name"
+                                value="{{ request('keyword_name') }}" placeholder="Search Nama Debitur ...">
+                        </div>
+                        <div class="col-md-2">
+                            <input type="text" class="form-control" name="keyword_branch"
+                                value="{{ request('keyword_branch') }}" placeholder="Search Cabang ...">
+                        </div>
+                        <div class="col-md-2">
+                            <input type="text" class="form-control" name="keyword_produk"
+                                value="{{ request('keyword_produk') }}" placeholder="Search Produk ...">
+                        </div>
+                        <div class="col-md-2">
+                            <select class="form-control" name="final_status">
+                                <option value="">Semua Status</option>
+                                <option value="1" {{ request('final_status') == '1' ? 'selected' : '' }}>Verify</option>
+                                <option value="3" {{ request('final_status') == '3' ? 'selected' : '' }}>TBO</option>
+                                <option value="6" {{ request('final_status') == '6' ? 'selected' : '' }}>Not Approve</option>
+                            </select>
+                        </div>
+                        <div class="col-md-1">
+                            <span class="input-group-btn">
+                                <button type="submit" class="btn ripple btn-primary br-tl-0 br-bl-0"
+                                    type="button">Search</button>
+                            </span>
+                        </div>
+                        <div class="col-md-1">
+                            <a href="{{ url()->current() }}" class="btn ripple btn-secondary">Reset</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
 {{-- Main Card --}}
 <div class="row row-sm">
     <div class="col-xl-12">
@@ -42,7 +89,8 @@
                     <h4 class="card-title mg-b-0">List Loan Pending Disbursement</h4>
                 </div>
                 <p class="tx-12 tx-gray-500 mb-2">
-                    Loan yang sudah upload file bukti verifikator dan siap untuk di-disburse
+                    Loan yang sudah upload file bukti verifikator dan siap untuk di-disburse.
+                    Total: <strong>{{ $loans->total() }}</strong> loan(s)
                 </p>
             </div>
             <div class="card-body">
@@ -112,12 +160,10 @@
                                     @endif
                                 </td>
                                 <td>
-                                    <button type="button"
-                                            class="btn btn-sm btn-success btn-flag-ready"
-                                            data-loan="{{ $loan->loan_app_no }}"
-                                            data-nama="{{ $loan->nama_debitur }}">
-                                        <i class="fa fa-check"></i> Ready to Disburse
-                                    </button>
+                                    <a href="{{ route('datafile.show_new', $loan->loan_app_no) }}?lock=1"
+                                       class="btn btn-sm btn-primary">
+                                        <i class="fa fa-eye"></i> Show
+                                    </a>
                                 </td>
                             </tr>
                             @empty
@@ -142,81 +188,4 @@
     </div>
 </div>
 
-@endsection
-
-@section('scripts')
-<!-- SweetAlert2 JavaScript -->
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
-<script>
-$(document).ready(function() {
-    console.log('Pending Disbursement script loaded');
-
-    // Handle flag ready to disburse button
-    $('.btn-flag-ready').on('click', function() {
-        var loanAppNo = $(this).data('loan');
-        var namaDebitur = $(this).data('nama');
-        var btn = $(this);
-
-        Swal.fire({
-            title: 'Konfirmasi',
-            html: 'Flag loan <strong>' + loanAppNo + '</strong> (<em>' + namaDebitur + '</em>) sebagai <strong>Ready to Disburse</strong>?',
-            icon: 'question',
-            showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
-            confirmButtonText: '<i class="fa fa-check"></i> Ya, Flag Ready',
-            cancelButtonText: '<i class="fa fa-times"></i> Batal'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                // Disable button
-                btn.prop('disabled', true).html('<i class="fa fa-spinner fa-spin"></i> Processing...');
-
-                // Send AJAX request
-                $.ajax({
-                    url: '{{ url("flag-ready-to-disburs") }}/' + loanAppNo,
-                    type: 'POST',
-                    data: {
-                        _token: '{{ csrf_token() }}'
-                    },
-                    success: function(response) {
-                        console.log('Flag success:', response);
-                        if(response.success) {
-                            Swal.fire({
-                                icon: 'success',
-                                title: 'Berhasil!',
-                                text: response.message,
-                                showConfirmButton: true
-                            }).then(() => {
-                                // Reload page to update list
-                                window.location.reload();
-                            });
-                        } else {
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Gagal!',
-                                text: response.message
-                            });
-                            btn.prop('disabled', false).html('<i class="fa fa-check"></i> Ready to Disburse');
-                        }
-                    },
-                    error: function(xhr) {
-                        console.log('Flag error:', xhr);
-                        var message = 'Terjadi kesalahan saat flag ready to disburse';
-                        if(xhr.responseJSON && xhr.responseJSON.message) {
-                            message = xhr.responseJSON.message;
-                        }
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Error!',
-                            text: message
-                        });
-                        btn.prop('disabled', false).html('<i class="fa fa-check"></i> Ready to Disburse');
-                    }
-                });
-            }
-        });
-    });
-});
-</script>
 @endsection
