@@ -2356,7 +2356,7 @@
                                                                         - Setelah upload, loan akan diproses otomatis sesuai keputusan Verif2
                                                                     </div>
 
-                                                                    <form id="formUploadBuktiVerif1">
+                                                                    <form id="formUploadBuktiVerif1" method="POST" action="javascript:void(0)">
                                                                         @csrf
                                                                         <input type="hidden" name="loan_app_no" value="{{ $datafile->loan_app_no }}">
 
@@ -2386,72 +2386,6 @@
                                                                             </button>
                                                                         </div>
                                                                     </form>
-
-                                                                    <script>
-                                                                        $(document).ready(function() {
-                                                                            $('#formUploadBuktiVerif1').on('submit', function(e) {
-                                                                                e.preventDefault();
-
-                                                                                var formData = new FormData(this);
-                                                                                var btn = $('#btnUploadBuktiNew');
-
-                                                                                btn.prop('disabled', true).html('<i class="fa fa-spinner fa-spin"></i> Uploading...');
-                                                                                $('#upload_progress_new').show();
-
-                                                                                $.ajax({
-                                                                                    url: '{{ route("datafile.uploadBuktiVerifikator") }}',
-                                                                                    type: 'POST',
-                                                                                    data: formData,
-                                                                                    processData: false,
-                                                                                    contentType: false,
-                                                                                    xhr: function() {
-                                                                                        var xhr = new window.XMLHttpRequest();
-                                                                                        xhr.upload.addEventListener("progress", function(evt) {
-                                                                                            if (evt.lengthComputable) {
-                                                                                                var percentComplete = (evt.loaded / evt.total) * 100;
-                                                                                                $('#upload_progress_bar_new').css('width', percentComplete + '%')
-                                                                                                    .text(Math.round(percentComplete) + '%');
-                                                                                            }
-                                                                                        }, false);
-                                                                                        return xhr;
-                                                                                    },
-                                                                                    success: function(response) {
-                                                                                        if(response.success) {
-                                                                                            Swal.fire({
-                                                                                                icon: 'success',
-                                                                                                title: 'Berhasil!',
-                                                                                                text: response.message,
-                                                                                                showConfirmButton: true
-                                                                                            }).then(() => {
-                                                                                                window.location.reload();
-                                                                                            });
-                                                                                        } else {
-                                                                                            Swal.fire({
-                                                                                                icon: 'error',
-                                                                                                title: 'Gagal!',
-                                                                                                text: response.message
-                                                                                            });
-                                                                                            btn.prop('disabled', false).html('<i class="fa fa-upload"></i> Upload File Bukti');
-                                                                                            $('#upload_progress_new').hide();
-                                                                                        }
-                                                                                    },
-                                                                                    error: function(xhr) {
-                                                                                        var message = 'Terjadi kesalahan saat upload file';
-                                                                                        if(xhr.responseJSON && xhr.responseJSON.message) {
-                                                                                            message = xhr.responseJSON.message;
-                                                                                        }
-                                                                                        Swal.fire({
-                                                                                            icon: 'error',
-                                                                                            title: 'Error!',
-                                                                                            text: message
-                                                                                        });
-                                                                                        btn.prop('disabled', false).html('<i class="fa fa-upload"></i> Upload File Bukti');
-                                                                                        $('#upload_progress_new').hide();
-                                                                                    }
-                                                                                });
-                                                                            });
-                                                                        });
-                                                                    </script>
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -3712,6 +3646,81 @@
                     }
                     alert(errorMsg);
                     submitBtn.prop('disabled', false).html('<i class="fa fa-check-double"></i> Submit Keputusan Final');
+                }
+            });
+        });
+    });
+    </script>
+
+    <!-- Upload File Bukti Verifikator Handler -->
+    <script>
+    $(document).ready(function() {
+        console.log('Upload File Bukti script loaded');
+        console.log('jQuery version:', $.fn.jquery);
+        console.log('Swal available:', typeof Swal !== 'undefined');
+        console.log('Form element exists:', $('#formUploadBuktiVerif1').length);
+
+        $('#formUploadBuktiVerif1').on('submit', function(e) {
+            console.log('Form submitted - preventing default');
+            e.preventDefault();
+
+            var formData = new FormData(this);
+            var btn = $('#btnUploadBuktiNew');
+
+            btn.prop('disabled', true).html('<i class="fa fa-spinner fa-spin"></i> Uploading...');
+            $('#upload_progress_new').show();
+
+            $.ajax({
+                url: '{{ route("datafile.uploadBuktiVerifikator") }}',
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                xhr: function() {
+                    var xhr = new window.XMLHttpRequest();
+                    xhr.upload.addEventListener("progress", function(evt) {
+                        if (evt.lengthComputable) {
+                            var percentComplete = (evt.loaded / evt.total) * 100;
+                            $('#upload_progress_bar_new').css('width', percentComplete + '%')
+                                .text(Math.round(percentComplete) + '%');
+                        }
+                    }, false);
+                    return xhr;
+                },
+                success: function(response) {
+                    console.log('Upload success:', response);
+                    if(response.success) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Berhasil!',
+                            text: response.message,
+                            showConfirmButton: true
+                        }).then(() => {
+                            window.location.reload();
+                        });
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Gagal!',
+                            text: response.message
+                        });
+                        btn.prop('disabled', false).html('<i class="fa fa-upload"></i> Upload File Bukti');
+                        $('#upload_progress_new').hide();
+                    }
+                },
+                error: function(xhr) {
+                    console.log('Upload error:', xhr);
+                    var message = 'Terjadi kesalahan saat upload file';
+                    if(xhr.responseJSON && xhr.responseJSON.message) {
+                        message = xhr.responseJSON.message;
+                    }
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error!',
+                        text: message
+                    });
+                    btn.prop('disabled', false).html('<i class="fa fa-upload"></i> Upload File Bukti');
+                    $('#upload_progress_new').hide();
                 }
             });
         });
