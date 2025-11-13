@@ -2126,6 +2126,7 @@
                                                                         || (Session("role")=='spv4')
                                                                         || getUserPickupLoan($datafile->loan_app_no,Session("nik")))
                                                                 --}}
+                                                                {{-- Show Add Review EXCEPT when in Ready to Disburse context --}}
                                                                 @if (
                                                                     (($previousUrl == 'https://dms.bankwoorisaudara.com/pickup' &&
                                                                         (Session('role') == 'spv3' || Session('role') == 'spv4')) ||
@@ -2135,7 +2136,11 @@
                                                                     !in_array(Session('role'), ['team_verifikator_lvl1', 'team_verifikator_lvl2']) &&
                                                                     !(in_array(Session('role'), ['spv2', 'spv3', 'spv4']) &&
                                                                       !empty($datafile->file_bukti_verifikator) &&
-                                                                      $datafile->ready_to_disburs == 0)
+                                                                      $datafile->ready_to_disburs == 0 &&
+                                                                      (str_contains($previousUrl, 'pending-disbursement') ||
+                                                                       (request()->has('lock') &&
+                                                                        !str_contains($previousUrl, 'pickup') &&
+                                                                        !getUserPickupLoan($datafile->loan_app_no, Session('nik')))))
                                                                 )
                                                                     <div class="main-content-label mg-b-5">
                                                                         Add Review
@@ -2508,14 +2513,14 @@
                                                     {{-- ========================================= --}}
                                                     {{-- FORM SPV READY TO DISBURSE - START --}}
                                                     {{-- ========================================= --}}
+                                                    {{-- Show ONLY when coming from Pending Disbursement context --}}
                                                     @if(in_array(Session("role"), ['spv2', 'spv3', 'spv4']) &&
                                                         !empty($datafile->file_bukti_verifikator) &&
                                                         $datafile->ready_to_disburs == 0 &&
-                                                        !((($previousUrl == 'https://dms.bankwoorisaudara.com/pickup' &&
-                                                            (Session('role') == 'spv3' || Session('role') == 'spv4')) ||
-                                                            ($selisih->days >= 2 && (Session('role') == 'spv3' || Session('role') == 'spv4')) ||
-                                                            Session('role') == 'staff' ||
-                                                            getUserPickupLoan($datafile->loan_app_no, Session('nik'))))
+                                                        (str_contains($previousUrl, 'pending-disbursement') ||
+                                                         (request()->has('lock') &&
+                                                          !str_contains($previousUrl, 'pickup') &&
+                                                          !getUserPickupLoan($datafile->loan_app_no, Session('nik'))))
                                                     )
                                                     <div class="row">
                                                         <div class="col-lg-12 col-md-12">
