@@ -5943,6 +5943,46 @@ HAVING
             $com->reason = $request->reason;
             $flag = $request->flag_spv;
 
+            // Validasi dokumen hanya untuk flag Verify (1) atau TBO (3) dan hanya untuk SPV
+            if (($flag == 1 || $flag == 3) && in_array($level_spv, ['staff', 'spv1', 'spv2', 'spv3', 'spv4', 'pc', 'pcp'])) {
+                // Get all documents for this loan
+                $documents = DetailFileModel::where('loan_app_no', $request->loan_app_no)->get();
+
+                if ($documents->isNotEmpty()) {
+                    // Group by alias (jenis dokumen)
+                    $documentsByAlias = $documents->groupBy('alias');
+
+                    // Track which document types don't have valid files
+                    $invalidDocTypes = [];
+
+                    foreach ($documentsByAlias as $alias => $files) {
+                        $hasValidFile = false;
+
+                        foreach ($files as $file) {
+                            if ($file->doc_validation_status == '1') {
+                                $hasValidFile = true;
+                                break;
+                            }
+                        }
+
+                        // Jika jenis dokumen ini tidak memiliki file valid sama sekali
+                        if (!$hasValidFile) {
+                            $invalidDocTypes[] = $alias;
+                        }
+                    }
+
+                    // If there are document types without valid files, reject
+                    if (!empty($invalidDocTypes)) {
+                        return response()->json([
+                            'message' => 'Tidak dapat memberikan status ' . ($flag == 1 ? 'Verify' : 'TBO') . '. Beberapa jenis dokumen belum memiliki file yang valid.',
+                            'errors' => [
+                                'documents' => 'Dokumen berikut belum memiliki minimal 1 file valid: ' . implode(', ', $invalidDocTypes)
+                            ]
+                        ], 400);
+                    }
+                }
+            }
+
 
             if ($level_spv == "staff" || $level_spv == "spv1" || $level_spv == "pc" || $level_spv == "pcp") {
                 $model->final_status_spv1 = $flag;
