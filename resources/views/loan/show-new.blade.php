@@ -6,6 +6,9 @@
     <!---Internal Fancy uploader css-->
     <link href="{{ URL::asset('assets/plugins/fancyuploder/fancy_fileupload.css') }}" rel="stylesheet" />
 
+    <!-- SweetAlert2 -->
+    <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
+
     <style>
         .uploaded-files-container {
             margin-top: 10px;
@@ -1949,7 +1952,18 @@
                                                                                         <td>{{ getLevel($br->level_spv) }}
                                                                                         </td>
                                                                                         <td>{!! getFlagColor($br->flag_spv) !!}</td>
-                                                                                        <td>{{ $br->comment }}</td>
+                                                                                        <td>
+                                                                                            {{ $br->comment }}
+                                                                                            @if(!empty($datafile->file_bukti_verifikator) && in_array($br->level_spv, ['team_verifikator_lvl1', 'user_verif1']))
+                                                                                                <br><br>
+                                                                                                <a href="{{ asset('indexed' . $datafile->file_bukti_verifikator) }}"
+                                                                                                   target="_blank"
+                                                                                                   class="text-primary">
+                                                                                                    <i class="fas fa-file-pdf"></i> Lihat Dokumen Verifikasi
+                                                                                                    <i class="fas fa-external-link-alt"></i>
+                                                                                                </a>
+                                                                                            @endif
+                                                                                        </td>
                                                                                         @if ($br->tbo_date != null)
                                                                                             <td>{{ date_format(date_create($br->tbo_date), 'Y-m-d') }}
                                                                                             </td>
@@ -2035,16 +2049,6 @@
                                                                                     } else {
                                                                                         $tag_tbo_date = '<p><b>TBO Date:</b> &nbsp;' . $tbo_date . '</p>';
                                                                                     }
-
-                                                                                    // Add link to file_bukti_verifikator if exists
-                                                                                    $tag_file_verifikator = '';
-                                                                                    if (!empty($datafile->file_bukti_verifikator)) {
-                                                                                        $verif_file_url = asset('indexed' . $datafile->file_bukti_verifikator);
-                                                                                        $verif_file_name = getlastnamefile($datafile->file_bukti_verifikator);
-                                                                                        $tag_file_verifikator = '<p><b>Dokumen Verifikasi:</b> &nbsp;' .
-                                                                                            '<a href="' . $verif_file_url . '" target="_blank" style="color: #007bff;">' .
-                                                                                            $verif_file_name . ' <i class="fas fa-external-link-alt"></i></a></p>';
-                                                                                    }
                                                                                     //dd(getnameuser("1"));
                                                                                 
                                                                                     echo '
@@ -2063,7 +2067,6 @@
                                                                                         $tag_reason .
                                                                                         $tag_comment .
                                                                                         $tag_tbo_date .
-                                                                                        $tag_file_verifikator .
                                                                                         '
                                                                                                                                                                     </div>
                                                                                                                                                                     <div class="timeline-footer d-flex align-items-center flex-wrap">
@@ -2112,24 +2115,24 @@
                                                                 $date_submit = new DateTime($datafile->date_input);
                                                                 $date_submit->setTime(0, 0, 0);
                                                                 $selisih = $current->diff($date_submit);
-                                                                
+
                                                                 ?>
-                                                                <?php /*
+                                                                {{--
                                                                     @if (
                                                                         ($previousUrl == 'https://dms.bankwoorisaudara.com/pickup' && Session("role")=='spv2')
-                                                                        || (($selisih->days >= 2) && Session("role")=='spv2')  
+                                                                        || (($selisih->days >= 2) && Session("role")=='spv2')
                                                                         || (Session("role")=='staff')
-                                                                        || (Session("role")=='spv3') 
+                                                                        || (Session("role")=='spv3')
                                                                         || (Session("role")=='spv4')
                                                                         || getUserPickupLoan($datafile->loan_app_no,Session("nik")))
-                                                                    */
-                                                                ?>
+                                                                --}}
                                                                 @if (
-                                                                    ($previousUrl == 'https://dms.bankwoorisaudara.com/pickup' &&
+                                                                    (($previousUrl == 'https://dms.bankwoorisaudara.com/pickup' &&
                                                                         (Session('role') == 'spv3' || Session('role') == 'spv4')) ||
                                                                         ($selisih->days >= 2 && (Session('role') == 'spv3' || Session('role') == 'spv4')) ||
                                                                         Session('role') == 'staff' ||
-                                                                        getUserPickupLoan($datafile->loan_app_no, Session('nik')))
+                                                                        getUserPickupLoan($datafile->loan_app_no, Session('nik'))) &&
+                                                                    !in_array(Session('role'), ['team_verifikator_lvl1', 'team_verifikator_lvl2']))
                                                                     <div class="main-content-label mg-b-5">
                                                                         Add Review
                                                                     </div>
@@ -2353,7 +2356,7 @@
                                                                         - Setelah upload, loan akan diproses otomatis sesuai keputusan Verif2
                                                                     </div>
 
-                                                                    <form id="formUploadBuktiVerif1">
+                                                                    <form id="formUploadBuktiVerif1" method="POST" action="javascript:void(0)">
                                                                         @csrf
                                                                         <input type="hidden" name="loan_app_no" value="{{ $datafile->loan_app_no }}">
 
@@ -2383,72 +2386,6 @@
                                                                             </button>
                                                                         </div>
                                                                     </form>
-
-                                                                    <script>
-                                                                        $(document).ready(function() {
-                                                                            $('#formUploadBuktiVerif1').on('submit', function(e) {
-                                                                                e.preventDefault();
-
-                                                                                var formData = new FormData(this);
-                                                                                var btn = $('#btnUploadBuktiNew');
-
-                                                                                btn.prop('disabled', true).html('<i class="fa fa-spinner fa-spin"></i> Uploading...');
-                                                                                $('#upload_progress_new').show();
-
-                                                                                $.ajax({
-                                                                                    url: '{{ route("datafile.uploadBuktiVerifikator") }}',
-                                                                                    type: 'POST',
-                                                                                    data: formData,
-                                                                                    processData: false,
-                                                                                    contentType: false,
-                                                                                    xhr: function() {
-                                                                                        var xhr = new window.XMLHttpRequest();
-                                                                                        xhr.upload.addEventListener("progress", function(evt) {
-                                                                                            if (evt.lengthComputable) {
-                                                                                                var percentComplete = (evt.loaded / evt.total) * 100;
-                                                                                                $('#upload_progress_bar_new').css('width', percentComplete + '%')
-                                                                                                    .text(Math.round(percentComplete) + '%');
-                                                                                            }
-                                                                                        }, false);
-                                                                                        return xhr;
-                                                                                    },
-                                                                                    success: function(response) {
-                                                                                        if(response.success) {
-                                                                                            Swal.fire({
-                                                                                                icon: 'success',
-                                                                                                title: 'Berhasil!',
-                                                                                                text: response.message,
-                                                                                                showConfirmButton: true
-                                                                                            }).then(() => {
-                                                                                                window.location.reload();
-                                                                                            });
-                                                                                        } else {
-                                                                                            Swal.fire({
-                                                                                                icon: 'error',
-                                                                                                title: 'Gagal!',
-                                                                                                text: response.message
-                                                                                            });
-                                                                                            btn.prop('disabled', false).html('<i class="fa fa-upload"></i> Upload File Bukti');
-                                                                                            $('#upload_progress_new').hide();
-                                                                                        }
-                                                                                    },
-                                                                                    error: function(xhr) {
-                                                                                        var message = 'Terjadi kesalahan saat upload file';
-                                                                                        if(xhr.responseJSON && xhr.responseJSON.message) {
-                                                                                            message = xhr.responseJSON.message;
-                                                                                        }
-                                                                                        Swal.fire({
-                                                                                            icon: 'error',
-                                                                                            title: 'Error!',
-                                                                                            text: message
-                                                                                        });
-                                                                                        btn.prop('disabled', false).html('<i class="fa fa-upload"></i> Upload File Bukti');
-                                                                                        $('#upload_progress_new').hide();
-                                                                                    }
-                                                                                });
-                                                                            });
-                                                                        });
-                                                                    </script>
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -2609,6 +2546,9 @@
 @endsection
 
 @section('scripts')
+    <!-- SweetAlert2 JavaScript - Load first before other scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     <script>
         $(document).on('click', '#mediumButton', function(event) {
             event.preventDefault();
@@ -3706,6 +3646,81 @@
                     }
                     alert(errorMsg);
                     submitBtn.prop('disabled', false).html('<i class="fa fa-check-double"></i> Submit Keputusan Final');
+                }
+            });
+        });
+    });
+    </script>
+
+    <!-- Upload File Bukti Verifikator Handler -->
+    <script>
+    $(document).ready(function() {
+        console.log('Upload File Bukti script loaded');
+        console.log('jQuery version:', $.fn.jquery);
+        console.log('Swal available:', typeof Swal !== 'undefined');
+        console.log('Form element exists:', $('#formUploadBuktiVerif1').length);
+
+        $('#formUploadBuktiVerif1').on('submit', function(e) {
+            console.log('Form submitted - preventing default');
+            e.preventDefault();
+
+            var formData = new FormData(this);
+            var btn = $('#btnUploadBuktiNew');
+
+            btn.prop('disabled', true).html('<i class="fa fa-spinner fa-spin"></i> Uploading...');
+            $('#upload_progress_new').show();
+
+            $.ajax({
+                url: '{{ route("datafile.uploadBuktiVerifikator") }}',
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                xhr: function() {
+                    var xhr = new window.XMLHttpRequest();
+                    xhr.upload.addEventListener("progress", function(evt) {
+                        if (evt.lengthComputable) {
+                            var percentComplete = (evt.loaded / evt.total) * 100;
+                            $('#upload_progress_bar_new').css('width', percentComplete + '%')
+                                .text(Math.round(percentComplete) + '%');
+                        }
+                    }, false);
+                    return xhr;
+                },
+                success: function(response) {
+                    console.log('Upload success:', response);
+                    if(response.success) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Berhasil!',
+                            text: response.message,
+                            showConfirmButton: true
+                        }).then(() => {
+                            window.location.reload();
+                        });
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Gagal!',
+                            text: response.message
+                        });
+                        btn.prop('disabled', false).html('<i class="fa fa-upload"></i> Upload File Bukti');
+                        $('#upload_progress_new').hide();
+                    }
+                },
+                error: function(xhr) {
+                    console.log('Upload error:', xhr);
+                    var message = 'Terjadi kesalahan saat upload file';
+                    if(xhr.responseJSON && xhr.responseJSON.message) {
+                        message = xhr.responseJSON.message;
+                    }
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error!',
+                        text: message
+                    });
+                    btn.prop('disabled', false).html('<i class="fa fa-upload"></i> Upload File Bukti');
+                    $('#upload_progress_new').hide();
                 }
             });
         });

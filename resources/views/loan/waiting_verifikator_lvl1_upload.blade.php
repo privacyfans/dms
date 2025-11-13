@@ -117,7 +117,7 @@
                                     </small>
                                 </td>
                                 <td>
-                                    <a href="{{ route('loans.show', $loan->loan_app_no) }}"
+                                    <a href="{{ route('datafile.show_new', $loan->loan_app_no) }}"
                                        class="btn btn-sm btn-info">
                                         <i class="fa fa-upload"></i> Upload File
                                     </a>

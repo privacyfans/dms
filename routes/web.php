@@ -248,6 +248,10 @@ Route::get('waiting_verifikator_lvl1_upload', [DataFilesController::class,'waiti
 Route::get('waiting_verifikator_lvl2', [DataFilesController::class,'waiting_verifikator_lvl2'])->name('datafile.waiting_verifikator_lvl2');
 Route::post('upload-bukti-verifikator', [DataFilesController::class,'uploadBuktiVerifikator'])->name('datafile.uploadBuktiVerifikator');
 
+// Pending Disbursement Routes (SPV2, SPV3, SPV4)
+Route::get('pending-disbursement', [DataFilesController::class,'pendingDisbursement'])->name('datafile.pendingDisbursement');
+Route::post('flag-ready-to-disburs/{loan_app_no}', [DataFilesController::class,'flagReadyToDisburs'])->name('datafile.flagReadyToDisburs');
+
 Route::get('kupen', [DataFilesController::class,'kupen'])->name('datafile.kupen');
 Route::get('kupen-janda-duda', [DataFilesController::class,'kupenJandaDuda'])->name('datafile.kupenJandaDuda');
 Route::get('kupen-hybrid', [DataFilesController::class,'kupenHybrid'])->name('datafile.kupenHybrid');

@@ -87,6 +87,38 @@
 									<li><a href="{{url('tbo_overdue')}}">Pending TBO Overdue</a></li>
 								</ul>
 							</li>
+
+							{{-- MENU PENDING DISBURSEMENT - SPV2, SPV3, SPV4 --}}
+							<li>
+								<a href="{{route('datafile.pendingDisbursement')}}"><div class="side-angle1"></div><div class="side-angle2"></div><div class="side-arrow"></div>
+									<i class="fas fa-money-check-alt side-menu__icon"></i>
+								Pending Disbursement
+								@php
+									// Hitung jumlah loan yang pending disbursement
+									$count_pending_disburs_query = \App\Models\DataFileModel::where('file_bukti_verifikator', '!=', '')
+										->whereNotNull('file_bukti_verifikator')
+										->where('ready_to_disburs', 0)
+										->where('processed', 1);
+
+									// Apply branch filtering based on role
+									if(Session('role') == 'spv2') {
+										$count_pending_disburs_query->where('branch_code', Session('branch_code'));
+									} elseif(Session('role') == 'spv3') {
+										$branchlist = Session('branchlist');
+										if($branchlist && $branchlist != 'all') {
+											$branches = explode(',', $branchlist);
+											$count_pending_disburs_query->whereIn('branch_code', $branches);
+										}
+									}
+									// SPV4 sees all
+
+									$count_pending_disburs = $count_pending_disburs_query->count();
+								@endphp
+								@if($count_pending_disburs > 0)
+									<span class="badge badge-success side-badge">{{ $count_pending_disburs }}</span>
+								@endif
+								</a>
+							</li>
 							@endif
 
 							{{-- MENU TEAM VERIFIKATOR - START --}}

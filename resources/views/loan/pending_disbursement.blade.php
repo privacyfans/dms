@@ -1,0 +1,222 @@
+@extends('layouts.app')
+
+@section('breadcrumb')
+<div class="left-content">
+    <h4 class="content-title mb-1">Pending Disbursement</h4>
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="#">Disbursement</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Pending</li>
+        </ol>
+    </nav>
+</div>
+@endsection
+
+@section('content')
+
+{{-- Flash Messages --}}
+@if ($message = Session::get('success'))
+    <div class="alert alert-success" role="alert">
+        <button aria-label="Close" class="close" data-dismiss="alert" type="button">
+            <span aria-hidden="true">&times;</span>
+        </button>
+        <p>{{ $message }}</p>
+    </div>
+@endif
+
+@if ($message = Session::get('error'))
+    <div class="alert alert-danger mg-b-0" role="alert">
+        <button aria-label="Close" class="close" data-dismiss="alert" type="button">
+            <span aria-hidden="true">&times;</span>
+        </button>
+        <p>{{ $message }}</p>
+    </div>
+@endif
+
+{{-- Main Card --}}
+<div class="row row-sm">
+    <div class="col-xl-12">
+        <div class="card">
+            <div class="card-header pb-0">
+                <div class="d-flex justify-content-between">
+                    <h4 class="card-title mg-b-0">List Loan Pending Disbursement</h4>
+                </div>
+                <p class="tx-12 tx-gray-500 mb-2">
+                    Loan yang sudah upload file bukti verifikator dan siap untuk di-disburse
+                </p>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped table-bordered text-nowrap w-100" id="responsive-datatable">
+                        <thead>
+                            <tr>
+                                <th class="wd-5p">No</th>
+                                <th class="wd-15p">Loan App No</th>
+                                <th class="wd-15p">Nama Debitur</th>
+                                <th class="wd-10p">Branch</th>
+                                <th class="wd-10p">Produk</th>
+                                <th class="wd-10p">Date Input</th>
+                                <th class="wd-10p">Status</th>
+                                <th class="wd-15p">File Bukti</th>
+                                <th class="wd-10p">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @php $no = ($loans->currentPage() - 1) * $loans->perPage() + 1; @endphp
+                            @forelse ($loans as $loan)
+                            <tr>
+                                <td>{{ $no++ }}</td>
+                                <td>
+                                    <a href="{{ route('datafile.show_new', $loan->loan_app_no) }}"
+                                       class="text-primary font-weight-bold"
+                                       target="_blank">
+                                        {{ $loan->loan_app_no }}
+                                        <i class="fas fa-external-link-alt fa-xs"></i>
+                                    </a>
+                                </td>
+                                <td>{{ $loan->nama_debitur ?? '-' }}</td>
+                                <td>{{ $loan->branch_code ?? '-' }}</td>
+                                <td>
+                                    @if($loan->products)
+                                        {{ $loan->products->jenis_produk ?? '-' }}
+                                    @else
+                                        -
+                                    @endif
+                                </td>
+                                <td>{{ \Carbon\Carbon::parse($loan->date_input)->format('d/m/Y H:i') }}</td>
+                                <td>
+                                    @if($loan->final_status == 1)
+                                        <span class="badge badge-success">Verify</span>
+                                    @elseif($loan->final_status == 3)
+                                        <span class="badge badge-warning">TBO</span>
+                                    @elseif($loan->final_status == 6)
+                                        <span class="badge badge-danger">Not Approve</span>
+                                    @else
+                                        <span class="badge badge-secondary">-</span>
+                                    @endif
+                                </td>
+                                <td>
+                                    @if(!empty($loan->file_bukti_verifikator))
+                                        <a href="{{ asset('indexed' . $loan->file_bukti_verifikator) }}"
+                                           target="_blank"
+                                           class="text-primary">
+                                            <i class="fas fa-file-pdf"></i> Lihat Bukti
+                                            <i class="fas fa-external-link-alt fa-xs"></i>
+                                        </a>
+                                        <br>
+                                        <small class="text-muted">
+                                            By: {{ $loan->user_verif1 ?? '-' }}
+                                        </small>
+                                    @else
+                                        <span class="text-muted">-</span>
+                                    @endif
+                                </td>
+                                <td>
+                                    <button type="button"
+                                            class="btn btn-sm btn-success btn-flag-ready"
+                                            data-loan="{{ $loan->loan_app_no }}"
+                                            data-nama="{{ $loan->nama_debitur }}">
+                                        <i class="fa fa-check"></i> Ready to Disburse
+                                    </button>
+                                </td>
+                            </tr>
+                            @empty
+                            <tr>
+                                <td colspan="9" class="text-center">
+                                    <div class="alert alert-info">
+                                        <i class="fa fa-info-circle"></i> Tidak ada loan yang pending disbursement
+                                    </div>
+                                </td>
+                            </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
+
+                {{-- Pagination --}}
+                <div class="mt-3">
+                    {{ $loans->links() }}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@endsection
+
+@section('scripts')
+<!-- SweetAlert2 JavaScript -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+$(document).ready(function() {
+    console.log('Pending Disbursement script loaded');
+
+    // Handle flag ready to disburse button
+    $('.btn-flag-ready').on('click', function() {
+        var loanAppNo = $(this).data('loan');
+        var namaDebitur = $(this).data('nama');
+        var btn = $(this);
+
+        Swal.fire({
+            title: 'Konfirmasi',
+            html: 'Flag loan <strong>' + loanAppNo + '</strong> (<em>' + namaDebitur + '</em>) sebagai <strong>Ready to Disburse</strong>?',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: '<i class="fa fa-check"></i> Ya, Flag Ready',
+            cancelButtonText: '<i class="fa fa-times"></i> Batal'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Disable button
+                btn.prop('disabled', true).html('<i class="fa fa-spinner fa-spin"></i> Processing...');
+
+                // Send AJAX request
+                $.ajax({
+                    url: '{{ url("flag-ready-to-disburs") }}/' + loanAppNo,
+                    type: 'POST',
+                    data: {
+                        _token: '{{ csrf_token() }}'
+                    },
+                    success: function(response) {
+                        console.log('Flag success:', response);
+                        if(response.success) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Berhasil!',
+                                text: response.message,
+                                showConfirmButton: true
+                            }).then(() => {
+                                // Reload page to update list
+                                window.location.reload();
+                            });
+                        } else {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Gagal!',
+                                text: response.message
+                            });
+                            btn.prop('disabled', false).html('<i class="fa fa-check"></i> Ready to Disburse');
+                        }
+                    },
+                    error: function(xhr) {
+                        console.log('Flag error:', xhr);
+                        var message = 'Terjadi kesalahan saat flag ready to disburse';
+                        if(xhr.responseJSON && xhr.responseJSON.message) {
+                            message = xhr.responseJSON.message;
+                        }
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error!',
+                            text: message
+                        });
+                        btn.prop('disabled', false).html('<i class="fa fa-check"></i> Ready to Disburse');
+                    }
+                });
+            }
+        });
+    });
+});
+</script>
+@endsection
