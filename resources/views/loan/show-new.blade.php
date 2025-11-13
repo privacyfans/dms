@@ -2125,11 +2125,12 @@
                                                                     */
                                                                 ?>
                                                                 @if (
-                                                                    ($previousUrl == 'https://dms.bankwoorisaudara.com/pickup' &&
+                                                                    (($previousUrl == 'https://dms.bankwoorisaudara.com/pickup' &&
                                                                         (Session('role') == 'spv3' || Session('role') == 'spv4')) ||
                                                                         ($selisih->days >= 2 && (Session('role') == 'spv3' || Session('role') == 'spv4')) ||
                                                                         Session('role') == 'staff' ||
-                                                                        getUserPickupLoan($datafile->loan_app_no, Session('nik')))
+                                                                        getUserPickupLoan($datafile->loan_app_no, Session('nik'))) &&
+                                                                    !in_array(Session('role'), ['team_verifikator_lvl1', 'team_verifikator_lvl2']))
                                                                     <div class="main-content-label mg-b-5">
                                                                         Add Review
                                                                     </div>
