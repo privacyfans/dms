@@ -1949,7 +1949,18 @@
                                                                                         <td>{{ getLevel($br->level_spv) }}
                                                                                         </td>
                                                                                         <td>{!! getFlagColor($br->flag_spv) !!}</td>
-                                                                                        <td>{{ $br->comment }}</td>
+                                                                                        <td>
+                                                                                            {{ $br->comment }}
+                                                                                            @if(!empty($datafile->file_bukti_verifikator) && in_array($br->level_spv, ['team_verifikator_lvl1', 'user_verif1']))
+                                                                                                <br><br>
+                                                                                                <a href="{{ asset('indexed' . $datafile->file_bukti_verifikator) }}"
+                                                                                                   target="_blank"
+                                                                                                   class="text-primary">
+                                                                                                    <i class="fas fa-file-pdf"></i> Lihat Dokumen Verifikasi
+                                                                                                    <i class="fas fa-external-link-alt"></i>
+                                                                                                </a>
+                                                                                            @endif
+                                                                                        </td>
                                                                                         @if ($br->tbo_date != null)
                                                                                             <td>{{ date_format(date_create($br->tbo_date), 'Y-m-d') }}
                                                                                             </td>
@@ -2035,16 +2046,6 @@
                                                                                     } else {
                                                                                         $tag_tbo_date = '<p><b>TBO Date:</b> &nbsp;' . $tbo_date . '</p>';
                                                                                     }
-
-                                                                                    // Add link to file_bukti_verifikator if exists
-                                                                                    $tag_file_verifikator = '';
-                                                                                    if (!empty($datafile->file_bukti_verifikator)) {
-                                                                                        $verif_file_url = asset('indexed' . $datafile->file_bukti_verifikator);
-                                                                                        $verif_file_name = getlastnamefile($datafile->file_bukti_verifikator);
-                                                                                        $tag_file_verifikator = '<p><b>Dokumen Verifikasi:</b> &nbsp;' .
-                                                                                            '<a href="' . $verif_file_url . '" target="_blank" style="color: #007bff;">' .
-                                                                                            $verif_file_name . ' <i class="fas fa-external-link-alt"></i></a></p>';
-                                                                                    }
                                                                                     //dd(getnameuser("1"));
                                                                                 
                                                                                     echo '
@@ -2063,7 +2064,6 @@
                                                                                         $tag_reason .
                                                                                         $tag_comment .
                                                                                         $tag_tbo_date .
-                                                                                        $tag_file_verifikator .
                                                                                         '
                                                                                                                                                                     </div>
                                                                                                                                                                     <div class="timeline-footer d-flex align-items-center flex-wrap">
