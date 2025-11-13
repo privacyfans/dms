@@ -3471,14 +3471,15 @@
 
                         var obj = JSON.parse(xhr.responseText);
 
-                        if (obj.hasOwnProperty('message')) {
+                        // Check if it's an error response (has errors property or success = false)
+                        if (obj.hasOwnProperty('errors') || (obj.hasOwnProperty('success') && obj.success === false)) {
                             $('#MsgError').empty();
-                            var bodyerror = obj.errors;
+                            var bodyerror = obj.errors || {};
 
                             var msg = "";
                             var msghead =
                                 "<div class=\"alert alert-danger\"><strong>Whoops!</strong> " +
-                                obj.message + "<br><br><ul>";
+                                (obj.message || 'Terjadi kesalahan') + "<br><br><ul>";
                             var msgbody = "";
                             var msgfoot = "</ul></div>";
 
@@ -3488,7 +3489,25 @@
                             msg = msghead + msgbody + msgfoot;
                             $('#MsgError').html(msg);
                             $('.progress-bar').text('Review Document Unsuccessfuly');
-                        } else {
+                        }
+                        // Success response
+                        else if (obj.hasOwnProperty('success') && obj.success === true) {
+                            $('#MsgError').empty();
+
+                            // Display success message
+                            var successMsg = "<div class=\"alert alert-success\"><strong>Success!</strong> " +
+                                (obj.message || 'Review berhasil disimpan') + "</div>";
+                            $('#MsgError').html(successMsg);
+
+                            $('.progress-bar').text('Review Document Done');
+
+                            // Reload after 1 second
+                            setTimeout(function() {
+                                location.reload();
+                            }, 1000);
+                        }
+                        // Legacy response without success property (backward compatibility)
+                        else {
                             $('#MsgError').empty();
                             $('.progress-bar').text('Review Document Done');
                             var idloan = $('#loan_app_no').val();
