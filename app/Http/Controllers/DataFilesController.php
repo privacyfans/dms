@@ -6218,6 +6218,76 @@ HAVING
             $com->reason = $request->reason;
             $flag = $request->flag_spv;
 
+            // Validasi dokumen hanya untuk flag Verify (1) atau TBO (3) dan hanya untuk SPV
+            if (($flag == 1 || $flag == 3) && in_array($level_spv, ['staff', 'spv1', 'spv2', 'spv3', 'spv4', 'pc', 'pcp'])) {
+                // Get all documents for this loan
+                $documents = DetailFileModel::where('loan_app_no', $request->loan_app_no)->get();
+
+                // Jika tidak ada dokumen sama sekali, reject
+                if ($documents->isEmpty()) {
+                    return response()->json([
+                        'message' => 'Tidak dapat memberikan status ' . ($flag == 1 ? 'Verify' : 'TBO') . '. Belum ada dokumen yang diupload untuk loan ini.',
+                        'errors' => [
+                            'documents' => 'Silakan upload dokumen terlebih dahulu dan berikan validasi.'
+                        ]
+                    ], 400);
+                }
+
+                // Group by alias (jenis dokumen)
+                $documentsByAlias = $documents->groupBy('alias');
+
+                // Track which document types don't have valid files
+                $invalidDocTypes = [];
+                $unvalidatedDocTypes = [];
+
+                foreach ($documentsByAlias as $alias => $files) {
+                    $hasValidFile = false;
+                    $allUnvalidated = true;
+
+                    foreach ($files as $file) {
+                        // Cek apakah ada file yang valid
+                        if ($file->doc_validation_status == '1') {
+                            $hasValidFile = true;
+                            $allUnvalidated = false;
+                            break;
+                        }
+                        // Cek apakah ada file yang sudah divalidasi (meskipun invalid)
+                        if ($file->doc_validation_status !== null && $file->doc_validation_status !== '') {
+                            $allUnvalidated = false;
+                        }
+                    }
+
+                    // Jika semua file untuk jenis dokumen ini belum divalidasi
+                    if ($allUnvalidated) {
+                        $unvalidatedDocTypes[] = $alias;
+                    }
+                    // Jika sudah ada yang divalidasi tapi tidak ada yang valid
+                    elseif (!$hasValidFile) {
+                        $invalidDocTypes[] = $alias;
+                    }
+                }
+
+                // If there are unvalidated or invalid document types, reject
+                if (!empty($unvalidatedDocTypes) || !empty($invalidDocTypes)) {
+                    $errorMessages = [];
+
+                    if (!empty($unvalidatedDocTypes)) {
+                        $errorMessages[] = 'Dokumen berikut belum divalidasi: ' . implode(', ', $unvalidatedDocTypes);
+                    }
+
+                    if (!empty($invalidDocTypes)) {
+                        $errorMessages[] = 'Dokumen berikut tidak memiliki file valid: ' . implode(', ', $invalidDocTypes);
+                    }
+
+                    return response()->json([
+                        'message' => 'Tidak dapat memberikan status ' . ($flag == 1 ? 'Verify' : 'TBO') . '. Semua dokumen harus memiliki minimal 1 file yang valid.',
+                        'errors' => [
+                            'documents' => implode(' | ', $errorMessages)
+                        ]
+                    ], 400);
+                }
+            }
+
 
             if ($level_spv == "staff" || $level_spv == "spv1" || $level_spv == "pc" || $level_spv == "pcp") {
                 $model->final_status_spv1 = $flag;
