@@ -6645,6 +6645,94 @@ HAVING
     }
 
     /**
+     * Display list of loans pending disbursement (for SPV2, SPV3, SPV4)
+     * Loans that have file_bukti_verifikator uploaded but ready_to_disburs = 0
+     */
+    public function pendingDisbursement(Request $request)
+    {
+        $role = Session('role');
+        $nik = Session('nik');
+
+        // Only SPV2, SPV3, SPV4 can access
+        if (!in_array($role, ['spv2', 'spv3', 'spv4'])) {
+            return redirect('/')->with('error', 'Anda tidak memiliki akses ke halaman ini');
+        }
+
+        // Get loans with file_bukti_verifikator uploaded and ready_to_disburs = 0
+        $query = DataFileModel::where('file_bukti_verifikator', '!=', '')
+                              ->whereNotNull('file_bukti_verifikator')
+                              ->where('ready_to_disburs', 0)
+                              ->where('processed', 1); // Only processed loans
+
+        // Branch filtering based on role
+        if ($role == 'spv2') {
+            // SPV2 sees only their branch
+            $query->where('branch_code', Session('branch_code'));
+        } elseif ($role == 'spv3') {
+            // SPV3 sees their region
+            $branchlist = Session('branchlist');
+            if ($branchlist && $branchlist != 'all') {
+                $branches = explode(',', $branchlist);
+                $query->whereIn('branch_code', $branches);
+            }
+        }
+        // SPV4 sees all
+
+        // Sorting
+        $loans = $query->orderBy('date_input', 'desc')
+                      ->paginate(50);
+
+        return view('loan.pending_disbursement', compact('loans'));
+    }
+
+    /**
+     * Flag loan as ready to disburse
+     */
+    public function flagReadyToDisburs(Request $request, $loan_app_no)
+    {
+        $role = Session('role');
+        $nik = Session('nik');
+
+        // Only SPV2, SPV3, SPV4 can flag
+        if (!in_array($role, ['spv2', 'spv3', 'spv4'])) {
+            return response()->json(['success' => false, 'message' => 'Unauthorized access'], 403);
+        }
+
+        $loan = DataFileModel::find($loan_app_no);
+
+        if (!$loan) {
+            return response()->json(['success' => false, 'message' => 'Loan not found'], 404);
+        }
+
+        // Verify file_bukti_verifikator exists
+        if (empty($loan->file_bukti_verifikator)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'File bukti verifikator belum diupload'
+            ], 400);
+        }
+
+        // Verify not already flagged
+        if ($loan->ready_to_disburs == 1) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Loan sudah di-flag ready to disburse sebelumnya'
+            ], 400);
+        }
+
+        // Update flag
+        $loan->ready_to_disburs = 1;
+        $loan->ready_to_disburs_by = $nik;
+        $loan->ready_to_disburs_at = now();
+        $loan->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Loan berhasil di-flag ready to disburse'
+        ]);
+    }
+
+    /**
      * Show the form for editing the specified resource.
      *
      * @param  \App\Models\DataFileModel  $dataFile
