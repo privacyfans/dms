@@ -6678,8 +6678,9 @@ HAVING
         }
         // SPV4 sees all
 
-        // Sorting
-        $loans = $query->orderBy('date_input', 'desc')
+        // Sorting with eager loading
+        $loans = $query->with('mastercabang')
+                      ->orderBy('date_input', 'desc')
                       ->paginate(50);
 
         return view('loan.pending_disbursement', compact('loans'));

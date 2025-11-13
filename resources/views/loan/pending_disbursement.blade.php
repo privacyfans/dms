@@ -75,7 +75,13 @@
                                     </a>
                                 </td>
                                 <td>{{ $loan->nama_debitur ?? '-' }}</td>
-                                <td>{{ $loan->kode_cabang ?? '-' }}</td>
+                                <td>
+                                    @if($loan->mastercabang && $loan->mastercabang->first())
+                                        {{ $loan->mastercabang->first()->branch_name }}
+                                    @else
+                                        {{ $loan->kode_cabang ?? '-' }}
+                                    @endif
+                                </td>
                                 <td>{{ $loan->produk ?? '-' }}</td>
                                 <td>{{ \Carbon\Carbon::parse($loan->date_input)->format('d/m/Y H:i') }}</td>
                                 <td>
