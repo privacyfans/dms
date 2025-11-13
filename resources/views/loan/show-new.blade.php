@@ -6,6 +6,9 @@
     <!---Internal Fancy uploader css-->
     <link href="{{ URL::asset('assets/plugins/fancyuploder/fancy_fileupload.css') }}" rel="stylesheet" />
 
+    <!-- SweetAlert2 -->
+    <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
+
     <style>
         .uploaded-files-container {
             margin-top: 10px;
@@ -2609,6 +2612,9 @@
 @endsection
 
 @section('scripts')
+    <!-- SweetAlert2 JavaScript - Load first before other scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     <script>
         $(document).on('click', '#mediumButton', function(event) {
             event.preventDefault();

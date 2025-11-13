@@ -1,12 +1,15 @@
 @extends('layouts.app')
 
-@section('styles') 
+@section('styles')
 <link href="{{URL::asset('assets/plugins/fileuploads/css/fileupload.css')}}" rel="stylesheet" type="text/css"/>
 
 		<!---Internal Fancy uploader css-->
 		<link href="{{URL::asset('assets/plugins/fancyuploder/fancy_fileupload.css')}}" rel="stylesheet" />
-        
-        
+
+        <!-- SweetAlert2 -->
+        <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
+
+
 @endsection
 
 @section('breadcrumb')
@@ -1714,9 +1717,11 @@
 @endsection
 
 @section('scripts')
+    <!-- SweetAlert2 JavaScript - Load first before other scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <script>
-   
+
    $(document).on('click', '#mediumButton', function(event) {
                 event.preventDefault();
                 let href = $(this).attr('data-attr');
