@@ -2132,7 +2132,11 @@
                                                                         ($selisih->days >= 2 && (Session('role') == 'spv3' || Session('role') == 'spv4')) ||
                                                                         Session('role') == 'staff' ||
                                                                         getUserPickupLoan($datafile->loan_app_no, Session('nik'))) &&
-                                                                    !in_array(Session('role'), ['team_verifikator_lvl1', 'team_verifikator_lvl2']))
+                                                                    !in_array(Session('role'), ['team_verifikator_lvl1', 'team_verifikator_lvl2']) &&
+                                                                    !(in_array(Session('role'), ['spv2', 'spv3', 'spv4']) &&
+                                                                      !empty($datafile->file_bukti_verifikator) &&
+                                                                      $datafile->ready_to_disburs == 0)
+                                                                )
                                                                     <div class="main-content-label mg-b-5">
                                                                         Add Review
                                                                     </div>
@@ -2506,7 +2510,13 @@
                                                     {{-- ========================================= --}}
                                                     @if(in_array(Session("role"), ['spv2', 'spv3', 'spv4']) &&
                                                         !empty($datafile->file_bukti_verifikator) &&
-                                                        $datafile->ready_to_disburs == 0)
+                                                        $datafile->ready_to_disburs == 0 &&
+                                                        !((($previousUrl == 'https://dms.bankwoorisaudara.com/pickup' &&
+                                                            (Session('role') == 'spv3' || Session('role') == 'spv4')) ||
+                                                            ($selisih->days >= 2 && (Session('role') == 'spv3' || Session('role') == 'spv4')) ||
+                                                            Session('role') == 'staff' ||
+                                                            getUserPickupLoan($datafile->loan_app_no, Session('nik'))))
+                                                    )
                                                     <div class="row">
                                                         <div class="col-lg-12 col-md-12">
                                                             <div class="card">
