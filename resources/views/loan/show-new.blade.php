@@ -2112,18 +2112,17 @@
                                                                 $date_submit = new DateTime($datafile->date_input);
                                                                 $date_submit->setTime(0, 0, 0);
                                                                 $selisih = $current->diff($date_submit);
-                                                                
+
                                                                 ?>
-                                                                <?php /*
+                                                                {{--
                                                                     @if (
                                                                         ($previousUrl == 'https://dms.bankwoorisaudara.com/pickup' && Session("role")=='spv2')
-                                                                        || (($selisih->days >= 2) && Session("role")=='spv2')  
+                                                                        || (($selisih->days >= 2) && Session("role")=='spv2')
                                                                         || (Session("role")=='staff')
-                                                                        || (Session("role")=='spv3') 
+                                                                        || (Session("role")=='spv3')
                                                                         || (Session("role")=='spv4')
                                                                         || getUserPickupLoan($datafile->loan_app_no,Session("nik")))
-                                                                    */
-                                                                ?>
+                                                                --}}
                                                                 @if (
                                                                     (($previousUrl == 'https://dms.bankwoorisaudara.com/pickup' &&
                                                                         (Session('role') == 'spv3' || Session('role') == 'spv4')) ||
