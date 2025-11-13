@@ -80,7 +80,7 @@
                                 <th>Produk</th>
                                 <th>Cabang</th>
                                 <th>Tanggal Input</th>
-                                <th>Status SPV</th>
+                                <th>Status DCRM</th>
                                 <th>Keputusan Verif2</th>
                                 <th width="10%">Action</th>
                             </tr>
