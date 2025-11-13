@@ -857,6 +857,45 @@
                                                                                                                         <i
                                                                                                                             class="fas fa-external-link-alt"></i>
                                                                                                                     </a>
+
+                                                                                                                    {{-- Validation Icons --}}
+                                                                                                                    @if(in_array(Session('role'), ['spv1', 'spv2', 'spv3', 'spv4']))
+                                                                                                                        @if($file->doc_validation_status == '1')
+                                                                                                                            <i class="fas fa-check-circle text-success validation-icon"
+                                                                                                                               data-file-id="{{ $file->id }}"
+                                                                                                                               data-current-status="1"
+                                                                                                                               title="Dokumen Valid (klik untuk ubah)"
+                                                                                                                               style="cursor: pointer; margin-left: 5px;"></i>
+                                                                                                                        @elseif($file->doc_validation_status == '0')
+                                                                                                                            <i class="fas fa-times-circle text-danger validation-icon"
+                                                                                                                               data-file-id="{{ $file->id }}"
+                                                                                                                               data-current-status="0"
+                                                                                                                               title="Dokumen Invalid (klik untuk ubah)"
+                                                                                                                               style="cursor: pointer; margin-left: 5px;"></i>
+                                                                                                                        @else
+                                                                                                                            <i class="fas fa-check-circle text-muted validation-icon-select"
+                                                                                                                               data-file-id="{{ $file->id }}"
+                                                                                                                               data-action="valid"
+                                                                                                                               title="Tandai Valid"
+                                                                                                                               style="cursor: pointer; opacity: 0.3; margin-left: 5px;"></i>
+                                                                                                                            <i class="fas fa-times-circle text-muted validation-icon-select"
+                                                                                                                               data-file-id="{{ $file->id }}"
+                                                                                                                               data-action="invalid"
+                                                                                                                               title="Tandai Invalid"
+                                                                                                                               style="cursor: pointer; opacity: 0.3; margin-left: 2px;"></i>
+                                                                                                                        @endif
+                                                                                                                    @elseif(in_array(Session('role'), ['staff', 'team_verifikator_lvl1', 'team_verifikator_lvl2']))
+                                                                                                                        @if($file->doc_validation_status == '1')
+                                                                                                                            <i class="fas fa-check-circle text-success"
+                                                                                                                               title="Dokumen Valid"
+                                                                                                                               style="margin-left: 5px;"></i>
+                                                                                                                        @elseif($file->doc_validation_status == '0')
+                                                                                                                            <i class="fas fa-times-circle text-danger"
+                                                                                                                               title="Dokumen Invalid"
+                                                                                                                               style="margin-left: 5px;"></i>
+                                                                                                                        @endif
+                                                                                                                    @endif
+
                                                                                                                     {!! getScore($file->loan_app_no, $file->alias, $file->file) !!}
                                                                                                                 </div>
                                                                                                                 @if (checkCanDelete($datafile->loan_app_no))
@@ -1136,6 +1175,45 @@
                                                                                                                                             <i
                                                                                                                                                 class="fas fa-external-link-alt"></i>
                                                                                                                                         </a>
+
+                                                                                                                                        {{-- Validation Icons --}}
+                                                                                                                                        @if(in_array(Session('role'), ['spv1', 'spv2', 'spv3', 'spv4']))
+                                                                                                                                            @if($file->validation_status == '1')
+                                                                                                                                                <i class="fas fa-check-circle text-success validation-icon"
+                                                                                                                                                   data-file-id="{{ $file->id }}"
+                                                                                                                                                   data-current-status="1"
+                                                                                                                                                   title="Dokumen Valid (klik untuk ubah)"
+                                                                                                                                                   style="cursor: pointer; margin-left: 5px;"></i>
+                                                                                                                                            @elseif($file->doc_validation_status == '0')
+                                                                                                                                                <i class="fas fa-times-circle text-danger validation-icon"
+                                                                                                                                                   data-file-id="{{ $file->id }}"
+                                                                                                                                                   data-current-status="0"
+                                                                                                                                                   title="Dokumen Invalid (klik untuk ubah)"
+                                                                                                                                                   style="cursor: pointer; margin-left: 5px;"></i>
+                                                                                                                                            @else
+                                                                                                                                                <i class="fas fa-check-circle text-muted validation-icon-select"
+                                                                                                                                                   data-file-id="{{ $file->id }}"
+                                                                                                                                                   data-action="valid"
+                                                                                                                                                   title="Tandai Valid"
+                                                                                                                                                   style="cursor: pointer; opacity: 0.3; margin-left: 5px;"></i>
+                                                                                                                                                <i class="fas fa-times-circle text-muted validation-icon-select"
+                                                                                                                                                   data-file-id="{{ $file->id }}"
+                                                                                                                                                   data-action="invalid"
+                                                                                                                                                   title="Tandai Invalid"
+                                                                                                                                                   style="cursor: pointer; opacity: 0.3; margin-left: 2px;"></i>
+                                                                                                                                            @endif
+                                                                                                                                        @elseif(in_array(Session('role'), ['staff', 'team_verifikator_lvl1', 'team_verifikator_lvl2']))
+                                                                                                                                            @if($file->validation_status == '1')
+                                                                                                                                                <i class="fas fa-check-circle text-success"
+                                                                                                                                                   title="Dokumen Valid"
+                                                                                                                                                   style="margin-left: 5px;"></i>
+                                                                                                                                            @elseif($file->doc_validation_status == '0')
+                                                                                                                                                <i class="fas fa-times-circle text-danger"
+                                                                                                                                                   title="Dokumen Invalid"
+                                                                                                                                                   style="margin-left: 5px;"></i>
+                                                                                                                                            @endif
+                                                                                                                                        @endif
+
                                                                                                                                         {!! getScore($file->loan_app_no, $file->alias, $file->file) !!}
                                                                                                                                     </div>
                                                                                                                                     @if (checkCanDelete($datafile->loan_app_no))
@@ -1457,6 +1535,45 @@
                                                                                                                         <i
                                                                                                                             class="fas fa-external-link-alt"></i>
                                                                                                                     </a>
+
+                                                                                                                    {{-- Validation Icons --}}
+                                                                                                                    @if(in_array(Session('role'), ['spv1', 'spv2', 'spv3', 'spv4']))
+                                                                                                                        @if($file->doc_validation_status == '1')
+                                                                                                                            <i class="fas fa-check-circle text-success validation-icon"
+                                                                                                                               data-file-id="{{ $file->id }}"
+                                                                                                                               data-current-status="1"
+                                                                                                                               title="Dokumen Valid (klik untuk ubah)"
+                                                                                                                               style="cursor: pointer; margin-left: 5px;"></i>
+                                                                                                                        @elseif($file->doc_validation_status == '0')
+                                                                                                                            <i class="fas fa-times-circle text-danger validation-icon"
+                                                                                                                               data-file-id="{{ $file->id }}"
+                                                                                                                               data-current-status="0"
+                                                                                                                               title="Dokumen Invalid (klik untuk ubah)"
+                                                                                                                               style="cursor: pointer; margin-left: 5px;"></i>
+                                                                                                                        @else
+                                                                                                                            <i class="fas fa-check-circle text-muted validation-icon-select"
+                                                                                                                               data-file-id="{{ $file->id }}"
+                                                                                                                               data-action="valid"
+                                                                                                                               title="Tandai Valid"
+                                                                                                                               style="cursor: pointer; opacity: 0.3; margin-left: 5px;"></i>
+                                                                                                                            <i class="fas fa-times-circle text-muted validation-icon-select"
+                                                                                                                               data-file-id="{{ $file->id }}"
+                                                                                                                               data-action="invalid"
+                                                                                                                               title="Tandai Invalid"
+                                                                                                                               style="cursor: pointer; opacity: 0.3; margin-left: 2px;"></i>
+                                                                                                                        @endif
+                                                                                                                    @elseif(in_array(Session('role'), ['staff', 'team_verifikator_lvl1', 'team_verifikator_lvl2']))
+                                                                                                                        @if($file->doc_validation_status == '1')
+                                                                                                                            <i class="fas fa-check-circle text-success"
+                                                                                                                               title="Dokumen Valid"
+                                                                                                                               style="margin-left: 5px;"></i>
+                                                                                                                        @elseif($file->doc_validation_status == '0')
+                                                                                                                            <i class="fas fa-times-circle text-danger"
+                                                                                                                               title="Dokumen Invalid"
+                                                                                                                               style="margin-left: 5px;"></i>
+                                                                                                                        @endif
+                                                                                                                    @endif
+
                                                                                                                     {!! getScore($file->loan_app_no, $file->alias, $file->file) !!}
                                                                                                                 </div>
                                                                                                                 @if (checkCanDelete($datafile->loan_app_no))
@@ -1734,6 +1851,45 @@
                                                                                                                                             <i
                                                                                                                                                 class="fas fa-external-link-alt"></i>
                                                                                                                                         </a>
+
+                                                                                                                                        {{-- Validation Icons --}}
+                                                                                                                                        @if(in_array(Session('role'), ['spv1', 'spv2', 'spv3', 'spv4']))
+                                                                                                                                            @if($file->validation_status == '1')
+                                                                                                                                                <i class="fas fa-check-circle text-success validation-icon"
+                                                                                                                                                   data-file-id="{{ $file->id }}"
+                                                                                                                                                   data-current-status="1"
+                                                                                                                                                   title="Dokumen Valid (klik untuk ubah)"
+                                                                                                                                                   style="cursor: pointer; margin-left: 5px;"></i>
+                                                                                                                                            @elseif($file->doc_validation_status == '0')
+                                                                                                                                                <i class="fas fa-times-circle text-danger validation-icon"
+                                                                                                                                                   data-file-id="{{ $file->id }}"
+                                                                                                                                                   data-current-status="0"
+                                                                                                                                                   title="Dokumen Invalid (klik untuk ubah)"
+                                                                                                                                                   style="cursor: pointer; margin-left: 5px;"></i>
+                                                                                                                                            @else
+                                                                                                                                                <i class="fas fa-check-circle text-muted validation-icon-select"
+                                                                                                                                                   data-file-id="{{ $file->id }}"
+                                                                                                                                                   data-action="valid"
+                                                                                                                                                   title="Tandai Valid"
+                                                                                                                                                   style="cursor: pointer; opacity: 0.3; margin-left: 5px;"></i>
+                                                                                                                                                <i class="fas fa-times-circle text-muted validation-icon-select"
+                                                                                                                                                   data-file-id="{{ $file->id }}"
+                                                                                                                                                   data-action="invalid"
+                                                                                                                                                   title="Tandai Invalid"
+                                                                                                                                                   style="cursor: pointer; opacity: 0.3; margin-left: 2px;"></i>
+                                                                                                                                            @endif
+                                                                                                                                        @elseif(in_array(Session('role'), ['staff', 'team_verifikator_lvl1', 'team_verifikator_lvl2']))
+                                                                                                                                            @if($file->validation_status == '1')
+                                                                                                                                                <i class="fas fa-check-circle text-success"
+                                                                                                                                                   title="Dokumen Valid"
+                                                                                                                                                   style="margin-left: 5px;"></i>
+                                                                                                                                            @elseif($file->doc_validation_status == '0')
+                                                                                                                                                <i class="fas fa-times-circle text-danger"
+                                                                                                                                                   title="Dokumen Invalid"
+                                                                                                                                                   style="margin-left: 5px;"></i>
+                                                                                                                                            @endif
+                                                                                                                                        @endif
+
                                                                                                                                         {!! getScore($file->loan_app_no, $file->alias, $file->file) !!}
                                                                                                                                     </div>
                                                                                                                                     @if (checkCanDelete($datafile->loan_app_no))
@@ -3901,6 +4057,112 @@
                 }
             });
         });
+    });
+    </script>
+
+    <script>
+    $(document).ready(function() {
+        // Handle validation icon click
+        $(document).on('click', '.validation-icon, .validation-icon-select', function() {
+            const fileId = $(this).data('file-id');
+            const currentStatus = $(this).data('current-status');
+            const action = $(this).data('action');
+
+            // Tentukan status baru
+            let newStatus;
+            let statusText;
+            let confirmMessage;
+
+            if (action === 'valid') {
+                // Dari belum divalidasi ke valid
+                newStatus = '1';
+                statusText = 'VALID';
+                confirmMessage = 'Tandai dokumen ini sebagai <strong class="text-success">VALID</strong>?';
+            } else if (action === 'invalid') {
+                // Dari belum divalidasi ke invalid
+                newStatus = '0';
+                statusText = 'INVALID';
+                confirmMessage = 'Tandai dokumen ini sebagai <strong class="text-danger">INVALID</strong>?';
+            } else {
+                // Toggle: ubah dari valid ke invalid atau sebaliknya
+                if (currentStatus == '1') {
+                    newStatus = '0';
+                    statusText = 'INVALID';
+                    confirmMessage = 'Ubah status dokumen dari <strong class="text-success">VALID</strong> menjadi <strong class="text-danger">INVALID</strong>?';
+                } else {
+                    newStatus = '1';
+                    statusText = 'VALID';
+                    confirmMessage = 'Ubah status dokumen dari <strong class="text-danger">INVALID</strong> menjadi <strong class="text-success">VALID</strong>?';
+                }
+
+                // Konfirmasi ekstra untuk perubahan status
+                Swal.fire({
+                    title: 'Konfirmasi Perubahan',
+                    html: confirmMessage + '<br><br><strong>Apakah Anda yakin ingin mengubah status validasi dokumen ini?</strong>',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Ya, Saya Yakin',
+                    cancelButtonText: 'Batal',
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#3085d6'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        // Lanjutkan ke konfirmasi akhir
+                        submitValidation(fileId, newStatus, statusText);
+                    }
+                });
+                return; // Stop execution, tunggu konfirmasi ekstra
+            }
+
+            // Untuk first-time validation (belum ada status), langsung ke konfirmasi final
+            Swal.fire({
+                title: 'Konfirmasi Validasi',
+                html: confirmMessage,
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: 'Ya, Tandai',
+                cancelButtonText: 'Batal'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    submitValidation(fileId, newStatus, statusText);
+                }
+            });
+        });
+
+        // Function to submit validation via AJAX
+        function submitValidation(fileId, newStatus, statusText) {
+            $.ajax({
+                url: '{{ url("validate-document") }}/' + fileId,
+                type: 'POST',
+                data: {
+                    _token: '{{ csrf_token() }}',
+                    validation_status: newStatus
+                },
+                success: function(response) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Berhasil!',
+                        text: response.message || 'Dokumen berhasil ditandai sebagai ' + statusText,
+                        timer: 2000,
+                        showConfirmButton: false
+                    }).then(() => {
+                        location.reload();
+                    });
+                },
+                error: function(xhr) {
+                    console.log('Validation error:', xhr);
+                    var message = 'Terjadi kesalahan saat validasi dokumen';
+                    if(xhr.responseJSON && xhr.responseJSON.message) {
+                        message = xhr.responseJSON.message;
+                    }
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Gagal!',
+                        text: message
+                    });
+                }
+            });
+        }
     });
     </script>
 

@@ -6765,6 +6765,52 @@ HAVING
     }
 
     /**
+     * Validate document (mark as valid or invalid)
+     * Only accessible by SPV roles
+     */
+    public function validateDocument(Request $request, $id)
+    {
+        $role = Session('role');
+        $nik = Session('nik');
+
+        // Check role authorization - only SPV can validate
+        if (!in_array($role, ['spv1', 'spv2', 'spv3', 'spv4'])) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Anda tidak memiliki akses untuk validasi dokumen. Hanya SPV yang dapat melakukan validasi.'
+            ], 403);
+        }
+
+        // Validate input
+        $request->validate([
+            'validation_status' => 'required|in:0,1'
+        ]);
+
+        // Find document
+        $detailFile = DetailFileModel::find($id);
+
+        if (!$detailFile) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Dokumen tidak ditemukan'
+            ], 404);
+        }
+
+        // Update validation status
+        $detailFile->doc_validation_status = $request->validation_status;
+        $detailFile->doc_validation_date = now();
+        $detailFile->doc_validated_by = $nik;
+        $detailFile->save();
+
+        $statusText = $request->validation_status == '1' ? 'VALID' : 'INVALID';
+
+        return response()->json([
+            'success' => true,
+            'message' => "Dokumen berhasil ditandai sebagai {$statusText}"
+        ]);
+    }
+
+    /**
      * Show the form for editing the specified resource.
      *
      * @param  \App\Models\DataFileModel  $dataFile

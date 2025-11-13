@@ -22,7 +22,9 @@ class DetailFileModel extends Model
         'score',
         'validation_status',
         'validation_status_date',
-
+        'doc_validation_status',
+        'doc_validation_date',
+        'doc_validated_by',
     ];
 
 }

@@ -252,6 +252,9 @@ Route::post('upload-bukti-verifikator', [DataFilesController::class,'uploadBukti
 Route::get('pending-disbursement', [DataFilesController::class,'pendingDisbursement'])->name('datafile.pendingDisbursement');
 Route::post('flag-ready-to-disburs/{loan_app_no}', [DataFilesController::class,'flagReadyToDisburs'])->name('datafile.flagReadyToDisburs');
 
+// Document Validation Route (SPV1, SPV2, SPV3, SPV4)
+Route::post('validate-document/{id}', [DataFilesController::class,'validateDocument'])->name('datafile.validateDocument');
+
 Route::get('kupen', [DataFilesController::class,'kupen'])->name('datafile.kupen');
 Route::get('kupen-janda-duda', [DataFilesController::class,'kupenJandaDuda'])->name('datafile.kupenJandaDuda');
 Route::get('kupen-hybrid', [DataFilesController::class,'kupenHybrid'])->name('datafile.kupenHybrid');
