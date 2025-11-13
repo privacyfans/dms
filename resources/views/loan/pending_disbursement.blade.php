@@ -75,14 +75,8 @@
                                     </a>
                                 </td>
                                 <td>{{ $loan->nama_debitur ?? '-' }}</td>
-                                <td>{{ $loan->branch_code ?? '-' }}</td>
-                                <td>
-                                    @if($loan->products)
-                                        {{ $loan->products->jenis_produk ?? '-' }}
-                                    @else
-                                        -
-                                    @endif
-                                </td>
+                                <td>{{ $loan->kode_cabang ?? '-' }}</td>
+                                <td>{{ $loan->produk ?? '-' }}</td>
                                 <td>{{ \Carbon\Carbon::parse($loan->date_input)->format('d/m/Y H:i') }}</td>
                                 <td>
                                     @if($loan->final_status == 1)
