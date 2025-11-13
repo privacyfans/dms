@@ -2035,6 +2035,16 @@
                                                                                     } else {
                                                                                         $tag_tbo_date = '<p><b>TBO Date:</b> &nbsp;' . $tbo_date . '</p>';
                                                                                     }
+
+                                                                                    // Add link to file_bukti_verifikator if exists
+                                                                                    $tag_file_verifikator = '';
+                                                                                    if (!empty($datafile->file_bukti_verifikator)) {
+                                                                                        $verif_file_url = asset('indexed' . $datafile->file_bukti_verifikator);
+                                                                                        $verif_file_name = getlastnamefile($datafile->file_bukti_verifikator);
+                                                                                        $tag_file_verifikator = '<p><b>Dokumen Verifikasi:</b> &nbsp;' .
+                                                                                            '<a href="' . $verif_file_url . '" target="_blank" style="color: #007bff;">' .
+                                                                                            $verif_file_name . ' <i class="fas fa-external-link-alt"></i></a></p>';
+                                                                                    }
                                                                                     //dd(getnameuser("1"));
                                                                                 
                                                                                     echo '
@@ -2053,6 +2063,7 @@
                                                                                         $tag_reason .
                                                                                         $tag_comment .
                                                                                         $tag_tbo_date .
+                                                                                        $tag_file_verifikator .
                                                                                         '
                                                                                                                                                                     </div>
                                                                                                                                                                     <div class="timeline-footer d-flex align-items-center flex-wrap">
